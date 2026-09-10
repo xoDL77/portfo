@@ -1,8 +1,14 @@
 :root {
   --bg: #0d1117;
+  --surface: #161b22;
   --text: #e6edf3;
+  --text-muted: #8b949e;
   --accent: #58a6ff;
+  --border: #30363d;
+  --max-width: 900px;
 }
+
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -12,10 +18,88 @@ body {
   line-height: 1.6;
 }
 
-main {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem;
+a { color: var(--accent); }
+
+/* ---------- Header / Nav (mobile base) ---------- */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
 }
 
-a { color: var(--accent); }
+.nav {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.nav-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+/* ---------- Layout ---------- */
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+section { margin-bottom: 3rem; }
+
+h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+h2 {
+  font-size: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.4rem;
+}
+
+.tagline { color: var(--text-muted); margin: 0.25rem 0; }
+.clearance { color: var(--text-muted); font-size: 0.9rem; }
+
+.project-meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 0;
+}
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ---------- Tablet and up ---------- */
+@media (min-width: 768px) {
+  .nav {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  main { padding: 3rem 2rem; }
+
+  h1 { font-size: 3rem; }
+}
