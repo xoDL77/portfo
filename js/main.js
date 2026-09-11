@@ -58,3 +58,115 @@
     }
   });
 })();
+
+
+/* ============================================================
+   Copy email to clipboard
+   ============================================================ */
+
+(function () {
+  var btn = document.getElementById('copy-email');
+  var status = document.getElementById('copy-email-status');
+  if (!btn) return;
+
+  var email = 'cvportfolio.gray652@passmail.net';
+  var defaultLabel = btn.textContent;
+  var resetTimer;
+
+  function setLabel(label, statusText) {
+    btn.textContent = label;
+    if (status) status.textContent = statusText;
+    clearTimeout(resetTimer);
+    resetTimer = setTimeout(function () {
+      btn.textContent = defaultLabel;
+    }, 2000);
+  }
+
+  btn.addEventListener('click', function () {
+    try {
+      navigator.clipboard.writeText(email).then(function () {
+        setLabel('Copied!', 'Email address copied to clipboard.');
+      }, function () {
+        setLabel('Copy failed', 'Could not copy automatically — email is above.');
+      });
+    } catch (e) {
+      setLabel('Copy failed', 'Could not copy automatically — email is above.');
+    }
+  });
+})();
+
+
+/* ============================================================
+   Scroll-spy nav
+   Highlights the nav link for the section currently in view.
+   ============================================================ */
+
+(function () {
+  var sections = document.querySelectorAll('main section[id]');
+  var links = document.querySelectorAll('.nav-links a[href^="#"]');
+  if (!sections.length || !links.length || !('IntersectionObserver' in window)) return;
+
+  var linkById = {};
+  Array.prototype.forEach.call(links, function (link) {
+    linkById[link.getAttribute('href').slice(1)] = link;
+  });
+
+  function activate(link) {
+    Array.prototype.forEach.call(links, function (l) {
+      l.classList.remove('is-active');
+    });
+    link.classList.add('is-active');
+  }
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      var link = linkById[entry.target.id];
+      if (link && entry.isIntersecting) activate(link);
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+
+  Array.prototype.forEach.call(sections, function (section) {
+    observer.observe(section);
+  });
+
+  // On short pages the last section's midpoint may never cross the band
+  // above, since scrolling runs out before it does. A sentinel at the very
+  // end of <main> catches "scrolled to bottom" and forces the last link.
+  var sentinel = document.getElementById('scroll-sentinel');
+  var lastLink = linkById[sections[sections.length - 1].id];
+  if (sentinel && lastLink && 'IntersectionObserver' in window) {
+    var bottomObserver = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) activate(lastLink);
+    });
+    bottomObserver.observe(sentinel);
+  }
+})();
+
+
+/* ============================================================
+   Back to top
+   ============================================================ */
+
+(function () {
+  var btn = document.getElementById('back-to-top');
+  if (!btn) return;
+
+  var ticking = false;
+
+  function updateVisibility() {
+    btn.classList.toggle('is-visible', window.scrollY > 400);
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', function () {
+    if (!ticking) {
+      window.requestAnimationFrame(updateVisibility);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  btn.addEventListener('click', function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+})();

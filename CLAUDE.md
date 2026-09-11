@@ -73,7 +73,12 @@ audio, `-movflags +faststart` on the mp4, plus a poster JPEG.
 
 Done: repo, SSH auth, Pages deploy, responsive layout, theme toggle, skip link,
 focus styles, reduced-motion, Open Graph tags, favicon links, résumé download
-button, print stylesheet, custom 404, hover-play video component.
+button, print stylesheet, custom 404, hover-play video component,
+copy-email-to-clipboard button, scroll-spy nav, back-to-top button.
+
+Lazy loading (the remaining Tier 2 item) is deferred — `index.html` has no
+`<img>` tags yet to apply `loading="lazy"` to. Add it to any below-fold image
+introduced during step 3 (Content build-out).
 
 Assets not yet created — referenced in markup but 404ing until added:
 `assets/Cesar-Vaca-Resume.pdf`, `assets/img/favicon.svg`,
@@ -98,19 +103,20 @@ Work these in order. Each step assumes the previous one is done.
 
 ### 2. Tier 2 quality-of-life
 
-- **Copy-email-to-clipboard button** next to the contact address. Use
-  `navigator.clipboard.writeText` with a try/catch and a text fallback; swap the
-  button label to a confirmation for ~2s, then restore. Announce the change with
-  `aria-live="polite"` so it isn't silent for screen readers.
-- **Scroll-spy nav.** Highlight the nav link for the section currently in view.
-  Use `IntersectionObserver`, not a scroll handler — a scroll listener fires
-  constantly and will jank on mobile. Add `.is-active` styling; do not rely on
-  color alone to signal state.
-- **Back-to-top button.** Appears after ~400px of scroll, fixed bottom-right,
-  respects `prefers-reduced-motion` (instant jump instead of smooth scroll).
-  Needs an `aria-label`.
+- ~~Copy-email-to-clipboard button~~ — done. `#copy-email` in `index.html`,
+  handler in `js/main.js`.
+- ~~Scroll-spy nav~~ — done. `IntersectionObserver` over `main section[id]`
+  plus a `#scroll-sentinel` at the end of `<main>` so the last nav link
+  (Contact) still activates on short pages where the section's midpoint never
+  crosses the detection band before scrolling runs out. Keep the sentinel if
+  content grows — cheap, and it costs nothing once pages are taller.
+- ~~Back-to-top button~~ — done. `#back-to-top` in `index.html`, rAF-throttled
+  scroll listener in `js/main.js` (a plain scroll listener, throttled — a
+  pixel threshold like "after 400px" doesn't map cleanly onto an
+  `IntersectionObserver` sentinel the way section boundaries do).
 - **Lazy loading.** `loading="lazy"` on any image below the fold. Videos already
   use `preload="metadata"`. Do not lazy-load the OG image or anything in the hero.
+  Deferred — no `<img>` tags exist yet; pick this up in step 3.
 
 ### 3. Content build-out
 

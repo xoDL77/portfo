@@ -109,15 +109,23 @@
 
     <section id="contact">
       <h2>Contact</h2>
-      <p><a href="mailto:cvportfolio.gray652@passmail.net">cvportfolio.gray652@passmail.net</a></p>
+      <p>
+        <a href="mailto:cvportfolio.gray652@passmail.net">cvportfolio.gray652@passmail.net</a>
+        <button id="copy-email" class="copy-email-btn" type="button">Copy</button>
+      </p>
+      <p id="copy-email-status" class="visually-hidden" aria-live="polite"></p>
       <p><a href="https://www.linkedin.com/in/YOUR-HANDLE" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
     </section>
+
+    <div id="scroll-sentinel" class="scroll-sentinel" aria-hidden="true"></div>
 
   </main>
 
   <footer class="site-footer">
     <p>&copy; 2026 Cesar Vaca</p>
   </footer>
+
+  <button id="back-to-top" class="back-to-top" type="button" aria-label="Back to top">&#8593;</button>
 
   <script src="js/main.js"></script>
 </body>
