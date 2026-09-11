@@ -81,13 +81,76 @@ Assets not yet created — referenced in markup but 404ing until added:
 
 Placeholder still in `index.html`: `YOUR-HANDLE` in the LinkedIn URL.
 
-Next up — "Tier 2" quality-of-life:
-copy-email-to-clipboard button, scroll-spy nav highlighting, back-to-top button,
-`loading="lazy"` on images. Then the actual content: About, Skills, Projects,
-Certifications.
+Content is empty by design — the owner writes it.
 
-Content is empty by design. Projects is the section that matters most —
-each one should read as context, method, outcome rather than a resume bullet.
+## Roadmap
+
+Work these in order. Each step assumes the previous one is done.
+
+### 1. Missing assets (blocking — links currently 404)
+
+- `assets/Cesar-Vaca-Resume.pdf` — public version, alias email, no phone number.
+- `assets/img/favicon.svg` — simple monogram, inline SVG is fine.
+- `assets/img/og-image.png` — exactly 1200×630. Name, title, clearance on the
+  dark background. This is the LinkedIn preview card, so it matters more than
+  it looks.
+- Replace `YOUR-HANDLE` in the LinkedIn URL in `index.html`.
+
+### 2. Tier 2 quality-of-life
+
+- **Copy-email-to-clipboard button** next to the contact address. Use
+  `navigator.clipboard.writeText` with a try/catch and a text fallback; swap the
+  button label to a confirmation for ~2s, then restore. Announce the change with
+  `aria-live="polite"` so it isn't silent for screen readers.
+- **Scroll-spy nav.** Highlight the nav link for the section currently in view.
+  Use `IntersectionObserver`, not a scroll handler — a scroll listener fires
+  constantly and will jank on mobile. Add `.is-active` styling; do not rely on
+  color alone to signal state.
+- **Back-to-top button.** Appears after ~400px of scroll, fixed bottom-right,
+  respects `prefers-reduced-motion` (instant jump instead of smooth scroll).
+  Needs an `aria-label`.
+- **Lazy loading.** `loading="lazy"` on any image below the fold. Videos already
+  use `preload="metadata"`. Do not lazy-load the OG image or anything in the hero.
+
+### 3. Content build-out
+
+Order matters — Projects first, because it's the hard one and everything else
+is quick by comparison.
+
+- **Projects & Labs.** The differentiator. One `<article class="project">` per
+  item, each structured as context → method → outcome, not a resume bullet.
+  Candidates from the résumé: the agentic AI vulnerability-assessment tool
+  (strongest, it's a build not just an exercise), the Active Directory attack
+  chain, WPA2/PMKID capture and offline cracking, RFID/NFC badge cloning, and
+  the Burp Suite web/API testing work. Personal projects can carry more detail
+  than anything work-adjacent.
+- **Skills & Tooling.** Grouped lists — Recon, Exploitation, Wireless/RF,
+  Scripting & DevOps. Resist making this an unfiltered tool dump.
+- **About.** Two or three sentences. Air Force → Space Force → private sector
+  is a genuinely distinctive arc; lead with it.
+- **Certifications & Education.** Pentest+, Security+, SSCP, Network+, Linux
+  Essentials, Cloud+, AWS CCP, plus the UMGC BS in Cybersecurity Technology.
+
+### 4. Demo videos
+
+Record, sanitize, encode per the Media section above. Add one to the strongest
+project first and confirm hover-play works on desktop and tap-to-toggle on a
+real phone before batching the rest.
+
+### 5. Custom domain
+
+Buy the domain, add a `CNAME` file to the repo root, point DNS at GitHub Pages,
+set the custom domain in repo Settings → Pages, wait for the certificate, then
+confirm "Enforce HTTPS" is still checked. **This changes the site root from
+`/portfo/` to `/`** — audit `404.html` and the absolute Open Graph URLs at that
+point.
+
+### 6. Pre-launch check
+
+Before putting the link on the résumé: run Lighthouse, tab through the whole
+page with the keyboard, test on a real phone, verify the OG card with a preview
+debugger, confirm the print layout, and do a final pass for anything that
+shouldn't be public.
 
 ## Gotchas
 
