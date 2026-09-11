@@ -3,15 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cesar Vaca — Cybersecurity & Penetration Testing</title>
+
+  <!-- Theme must be set before first paint to avoid a flash of the wrong theme -->
+  <script>
+    (function () {
+      var theme = 'dark';
+      try {
+        var saved = localStorage.getItem('theme');
+        theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      } catch (e) {}
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <title>Cesar Vaca — Cybersecurity &amp; Penetration Testing</title>
   <meta name="description" content="Portfolio of Cesar Vaca, cybersecurity practitioner focused on penetration testing, red teaming, and security automation.">
+  <link rel="canonical" href="https://xodl77.github.io/portfo/">
+
+  <!-- Open Graph: controls the preview card on LinkedIn, Slack, iMessage, etc. -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://xodl77.github.io/portfo/">
+  <meta property="og:title" content="Cesar Vaca — Cybersecurity &amp; Penetration Testing">
+  <meta property="og:description" content="Penetration testing, red teaming, and security automation. TS/SCI cleared.">
+  <meta property="og:image" content="https://xodl77.github.io/portfo/assets/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Favicons -->
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+  <a class="skip-link" href="#main">Skip to content</a>
+
   <header class="site-header">
-    <nav class="nav">
+    <nav class="nav" aria-label="Primary">
       <a href="#top" class="nav-brand">Cesar Vaca</a>
+
       <ul class="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#skills">Skills</a></li>
@@ -19,20 +52,28 @@
         <li><a href="#certs">Certifications</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
+
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch color theme">
+        <span aria-hidden="true">&#9680;</span>
+      </button>
     </nav>
   </header>
 
-  <main id="top">
+  <main id="main">
 
-    <section class="hero">
+    <section class="hero" id="top">
       <h1>Cesar Vaca</h1>
       <p class="tagline">Penetration Testing &middot; Red Teaming &middot; Security Automation</p>
       <p class="clearance">TS/SCI Security Clearance</p>
+
+      <p class="hero-actions">
+        <a class="btn" href="assets/Cesar-Vaca-Resume.pdf" download>Download résumé (PDF)</a>
+      </p>
     </section>
 
     <section id="about">
       <h2>About</h2>
-      <p><!-- 2-3 sentences: who you are, where you came from, what you're focused on --></p>
+      <p><!-- 2–3 sentences: who you are, where you came from, what you're focused on --></p>
     </section>
 
     <section id="skills">
@@ -42,12 +83,23 @@
 
     <section id="projects">
       <h2>Projects &amp; Labs</h2>
-      <!-- One article per project -->
+
       <article class="project">
         <h3>Agentic AI Vulnerability Assessment Tool</h3>
         <p class="project-meta">Python &middot; Claude Agent SDK &middot; Personal Project</p>
         <p><!-- What it does, why you built it, what you learned --></p>
+
+        <!-- Hover-to-play demo. Delete this figure until you have a clip ready. -->
+        <figure class="demo">
+          <video class="demo-video" muted loop playsinline preload="metadata"
+                 poster="assets/img/demo-poster.jpg" width="1280" height="720">
+            <source src="assets/video/demo.webm" type="video/webm">
+            <source src="assets/video/demo.mp4" type="video/mp4">
+          </video>
+          <figcaption>Hover to play. Short description of what the clip shows.</figcaption>
+        </figure>
       </article>
+
     </section>
 
     <section id="certs">
@@ -58,7 +110,7 @@
     <section id="contact">
       <h2>Contact</h2>
       <p><a href="mailto:cvportfolio.gray652@passmail.net">cvportfolio.gray652@passmail.net</a></p>
-      <p><a href="https://www.linkedin.com/in/cesar-vaca/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+      <p><a href="https://www.linkedin.com/in/YOUR-HANDLE" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
     </section>
 
   </main>

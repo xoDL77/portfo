@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script>
+    (function () {
+      var theme = 'dark';
+      try {
+        var saved = localStorage.getItem('theme');
+        theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      } catch (e) {}
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <title>Page not found — Cesar Vaca</title>
+  <meta name="robots" content="noindex">
+
+  <!-- Absolute paths: a 404 can be served from any URL depth -->
+  <link rel="icon" href="/portfo/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/portfo/css/styles.css">
+</head>
+<body>
+
+  <main class="notfound">
+    <h1>Page not found</h1>
+    <p>That page doesn't exist. The link may be out of date or mistyped.</p>
+    <p class="hero-actions">
+      <a class="btn" href="/portfo/">Back to the portfolio</a>
+    </p>
+  </main>
+
+</body>
+</html>
