@@ -186,7 +186,6 @@ img, video { max-width: 100%; height: auto; }
 
 .mail-flyout-address {
   color: var(--text);
-  text-decoration: underline;
   font-size: 0.85rem;
 }
 
@@ -508,10 +507,19 @@ p { max-width: 70ch; }
 
   a { color: #000; text-decoration: underline; }
 
-  /* Show destinations of links, since a printed page can't be clicked */
+  /* Show destinations of links, since a printed page can't be clicked.
+     The mail trigger is a <button> with no href (email is plain text,
+     not a mailto link), so its address is carried in data-email instead
+     and surfaced the same way. */
   main a[href^="http"]::after,
   .nav-controls a[href]::after {
     content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+
+  #mail-trigger::after {
+    content: " (" attr(data-email) ")";
     font-size: 0.85em;
     word-break: break-all;
   }

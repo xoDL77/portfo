@@ -33,8 +33,10 @@ content must stay sanitized:
 - Home-lab and coursework framing only. No employer specifics, client names,
   real hostnames, internal IPs, or engagement details.
 - Screenshots and video must be scrubbed before publishing.
-- Contact uses an alias address (`cvportfolio.gray652@passmail.net`), not the
-  personal one on the PDF résumé. Phone number is deliberately absent.
+- Contact uses a dedicated domain address (`contact@cesarspace.online`), not
+  the personal one on the PDF résumé. It's shown as plain text, not a
+  `mailto:` link — see the mail-flyout notes below for why. Phone number is
+  deliberately absent.
 - If asked to add technical depth to a writeup, favor methodology and reasoning
   over reproducible operational detail.
 
@@ -88,11 +90,17 @@ content must stay sanitized:
   square, border, radius). The LinkedIn icon is a hand-drawn-free `<svg>` —
   a rounded-square outline plus an `<text>` "in" glyph, not a copied brand
   asset.
-  - **The mail icon is a hover flyout, not a bare mailto link.** `.mail-control`
-    wraps the icon (`#mail-trigger`) and a `.mail-flyout` panel (the real
-    email address as a link, plus the copy-email button) that's
-    `opacity:0; pointer-events:none` until `.mail-control` gets an `.is-open`
-    class or `:focus-within` fires.
+  - **The mail icon is a hover flyout, and there is no `mailto:` link
+    anywhere on the page.** `#mail-trigger` is a plain `<button>`, not an
+    `<a>` — it opens/closes `.mail-flyout` and does nothing else. The
+    flyout itself holds the address as inert text
+    (`<span class="mail-flyout-address">`, not a link) plus the
+    copy-email button; copying is the only way to get the address out of
+    the page, which is a deliberate choice, not an oversight — don't
+    re-add a `mailto:` href to either element without the owner asking for
+    it back. `.mail-control` wraps the trigger and the flyout, which is
+    `opacity:0; pointer-events:none` until `.mail-control` gets an
+    `.is-open` class or `:focus-within` fires.
   - **Opening/closing on hover is JS-driven with a close delay, not plain
     CSS `:hover`.** A first version used `.mail-control:hover .mail-flyout`
     directly and it was unusable — the flyout sits below the icon with a
@@ -107,10 +115,11 @@ content must stay sanitized:
     Don't revert this to a pure CSS `:hover` rule; the gap-crossing bug will
     come right back. On devices without hover (gated by
     `@media (hover: hover)` in JS), this whole path is skipped in favor of a
-    tap-to-toggle: first tap on `#mail-trigger` opens the flyout instead of
-    navigating, a second tap on the now-visible address actually opens mail.
-    It closes on a tap outside `.mail-control`, or the moment scrolling
-    starts — without that second one it would otherwise ride along
+    tap-to-toggle: tapping `#mail-trigger` opens the flyout, tapping it again
+    closes it (there's no navigation to fall through to since the trigger
+    isn't a link). It also closes on a tap outside `.mail-control`, or the
+    moment scrolling starts — without that second one it would otherwise
+    ride along
     indefinitely as the visitor scrolls, since there's no equivalent of
     "tap elsewhere to dismiss" for scrolling. **That close is wired to both
     `scroll` and `touchmove`, not `scroll` alone** — a `scroll`-only
@@ -134,26 +143,23 @@ content must stay sanitized:
     it's failing to close at all. `#copy-email-status` (the `aria-live`
     region for the copy confirmation) lives directly under `</header>`,
     outside the header itself.
-    **The flyout address link is intentionally not accent-colored** —
-    `color: var(--text)` with `text-decoration: underline`, so it reads as a
-    link via the underline without matching the site's blue link color;
-    that was a deliberate choice, not an oversight, so don't "fix" it back
-    to `var(--accent)`.
-  - **A real mouse click on `#mail-trigger` is deliberately neutered on
-    hover-capable devices** — `e.preventDefault()` + `trigger.blur()`, so it
-    doesn't navigate and doesn't leave the flyout stuck open. Without this,
-    clicking the `<a>` (easy to do by accident, reaching for the icon)
-    focuses it, and `:focus-within` then holds the flyout open indefinitely
-    — ignoring the hover grace-period timer entirely — until focus happens
-    to land somewhere else. On desktop this icon is meant to be a pure
-    hover trigger, not a clickable control; the real actions (opening mail,
-    copying the address) live inside the flyout itself. This only
-    intercepts genuine pointer clicks — it checks `event.detail !== 0`
-    (a keyboard-triggered Enter/Space "click" reports `detail === 0`), so
-    Tab-then-Enter activation for keyboard users still navigates normally
-    and still opens the flyout via `:focus-within`, same as plain Tab-focus
-    does. Don't drop the `event.detail` check trying to "simplify" this —
-    that's what keeps keyboard access working.
+    **The flyout address is intentionally plain, unstyled text** —
+    `color: var(--text)`, no underline, no accent color — since it isn't a
+    link and shouldn't look like one. Don't add link styling back to it.
+  - **A real mouse click on `#mail-trigger` is deliberately blurred on
+    hover-capable devices** — `trigger.blur()` on click when
+    `event.detail !== 0`, so it doesn't leave the flyout stuck open.
+    Without this, clicking the button (easy to do by accident, reaching for
+    the icon) focuses it, and `:focus-within` then holds the flyout open
+    indefinitely — ignoring the hover grace-period timer entirely — until
+    focus happens to land somewhere else. On desktop this icon is meant to
+    be a pure hover trigger; the only action (copying the address) lives
+    inside the flyout itself. This only fires on genuine pointer clicks —
+    it checks `event.detail !== 0` (a keyboard-triggered Enter/Space
+    "click" reports `detail === 0`), so Tab-then-Enter activation for
+    keyboard users still opens the flyout via `:focus-within` without
+    immediately blurring it away. Don't drop the `event.detail` check
+    trying to "simplify" this — that's what keeps keyboard access working.
   - **The flyout's horizontal position is clamped by JS, not fixed by CSS.**
     Base CSS centers it under the icon (`left: 50%` + `translateX(-50%)`),
     but the icon sits near the *left* edge of the header on narrow layouts
@@ -186,10 +192,12 @@ content must stay sanitized:
     this only governs the case where the visitor stays put.
   - `.mail-flyout` is hidden outright in print (`display: none`) rather than
     left to `opacity: 0`, since a print stylesheet has no hover state and an
-    invisible-but-present flyout would otherwise print as blank space or
-    confuse `.nav-controls a[href]::after`'s auto-appended-URL rule by
-    matching both the trigger link and the flyout's address link. Only the
-    trigger prints, with its `mailto:` appended.
+    invisible-but-present flyout would otherwise print as blank space. Only
+    the trigger prints. Since it's a `<button>` with no `href`, the address
+    can't ride along on `.nav-controls a[href]::after` the way the LinkedIn
+    link does — `#mail-trigger` carries the address in a `data-email`
+    attribute instead, and a matching `#mail-trigger::after` print rule
+    appends it the same way. Keep both in sync if the address ever changes.
 - **Projects and Certifications each show only their first 4 cards**; the
   rest carry a plain `hidden` attribute in the markup. A `setupExpandable()`
   helper in `js/main.js` (one call per grid) wires a toggle button
