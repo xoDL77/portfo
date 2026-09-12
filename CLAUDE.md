@@ -120,6 +120,24 @@ content must stay sanitized:
   back it. **Browsers cache favicons aggressively** outside
   the normal HTTP cache — a hard-refresh won't show a changed one, closing
   and reopening the tab (or a private window) will.
+- **The header shares the page's background instead of a contrasting
+  `--surface` band.** `.site-header` is `background: var(--bg)` (was
+  `var(--surface)` with a full-width `border-bottom`), so the header and
+  `<main>` read as one continuous surface rather than two stacked blocks —
+  a deliberate "modern, single-surface" look the owner asked for. The
+  dividing line is a separate `.header-rule` element (a `<div>` right after
+  `.nav`, inside `.site-header`) rather than a border on the header itself,
+  because it needs to start and end at specific points — flush with the
+  left edge of "Cesar Vaca" and the right edge of the theme-toggle button —
+  not edge-to-edge across the viewport. It works by mirroring `.nav`'s own
+  box model: `.header-rule` gets the same `max-width` + `margin: 0 auto` as
+  `.nav` (so it's centered identically), and the actual line is a child
+  `<span>` with `margin: 0 1rem` + `border-bottom` — margin, not padding,
+  because margin insets the line itself without moving where a border would
+  draw, which is what lines it up with `.nav`'s content (`.nav`'s own inset
+  from its edges is also 1rem, via its `padding: 1rem`). If `.nav`'s padding
+  ever changes, `.header-rule span`'s margin needs to change to match, or
+  the line drifts out of alignment with the brand/controls above it.
 - **There is no Contact section.** Contact lives in the sticky header instead
   (`.nav-controls`, inside `.nav`): a mail icon, a LinkedIn icon link, and
   the theme toggle, so it's visible on every scroll position without the

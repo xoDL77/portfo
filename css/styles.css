@@ -86,11 +86,21 @@ img, video { max-width: 100%; height: auto; }
    ============================================================ */
 
 .site-header {
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--bg);
   position: sticky;
   top: 0;
   z-index: 50;
+}
+
+.header-rule {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.header-rule span {
+  display: block;
+  margin: 0 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .nav {
