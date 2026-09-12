@@ -1,7 +1,11 @@
 # Portfolio site — project context
 
 Personal cybersecurity portfolio for Cesar Vaca. Static site, no build step,
-no framework. Live at https://xodl77.github.io/portfo/
+no framework. Live at https://cesarspace.online/ (custom domain; DNS is set
+and the site resolves there, HTTPS enforcement in GitHub Pages settings is
+still pending certificate issuance as of 2026-09-12). The old
+`https://xodl77.github.io/portfo/` address still works as GitHub Pages'
+default URL for the repo.
 
 ## Hard constraints
 
@@ -206,13 +210,15 @@ Record, sanitize, encode per the Media section above. Add one to the strongest
 project first and confirm hover-play works on desktop and tap-to-toggle on a
 real phone before batching the rest.
 
-### 5. Custom domain
+### 5. ~~Custom domain~~ — mostly done
 
-Buy the domain, add a `CNAME` file to the repo root, point DNS at GitHub Pages,
-set the custom domain in repo Settings → Pages, wait for the certificate, then
-confirm "Enforce HTTPS" is still checked. **This changes the site root from
-`/portfo/` to `/`** — audit `404.html` and the absolute Open Graph URLs at that
-point.
+`CNAME` (`cesarspace.online`) is in the repo root, DNS A records point at
+GitHub Pages, and the site resolves there now. `404.html`'s absolute paths
+and `index.html`'s canonical/OG URLs are updated to the new root (`/` instead
+of `/portfo/`). Still outstanding: DNS is not fully propagated everywhere
+yet, and "Enforce HTTPS" in repo Settings → Pages is waiting on GitHub's
+certificate issuance — check that box is checked once the cert is ready
+(it can silently stay unchecked after issuance and needs a manual click).
 
 ### 6. Pre-launch check
 
@@ -223,12 +229,13 @@ shouldn't be public.
 
 ## Gotchas
 
-- `404.html` must use **absolute** paths (`/portfo/css/styles.css`) because
-  GitHub Pages serves it from arbitrary URL depths. Relative paths break there.
-  Everything else uses relative paths.
-- This is a **project page**, not a user page, so the site lives under the
-  `/portfo/` subpath. Any absolute URL must include it. A future custom domain
-  will change this — check before hardcoding.
+- `404.html` must use **absolute** paths (`/css/styles.css`, not relative)
+  because GitHub Pages serves it from arbitrary URL depths. Everything else
+  uses relative paths.
+- The site root is now `/` (custom domain `cesarspace.online`), **not**
+  `/portfo/`. That subpath only applies to the legacy
+  `xodl77.github.io/portfo/` GitHub Pages default URL — don't reintroduce it
+  into absolute paths or URLs.
 - `404.html` cannot be tested with Live Server; only the deployed Pages URL
   serves it.
 - The owner is new to VS Code and Git. Explain terminal commands rather than
