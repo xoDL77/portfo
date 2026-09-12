@@ -174,7 +174,7 @@
 
           <h3>Agentic AI Vulnerability Assessment Tool</h3>
           <p class="project-meta">Python &middot; Claude Agent SDK &middot; Personal Project</p>
-          <p>Built an autonomous vulnerability-assessment agent that can be pointed at a
+          <p class="project-desc">Built an autonomous vulnerability-assessment agent that can be pointed at a
             single host or an entire subnet and left to run a scoped security assessment
             end to end, auto-generating a findings report when it's done. The agent enforces
             a strict tool allow-list and validates every target against an authorized IP
@@ -184,6 +184,12 @@
             has been iterated on and version-controlled across multiple releases. Building
             the guardrails turned out to be the harder and more interesting problem than
             building the automation itself.</p>
+          <button class="show-more-btn project-desc-toggle" type="button" aria-expanded="false" aria-label="Read more of this project description">
+            <span class="show-more-label">more</span>
+            <svg class="show-more-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
         </article>
 
         <article class="project">
@@ -197,7 +203,7 @@
 
           <h3>Active Directory Attack Chain</h3>
           <p class="project-meta">kerbrute &middot; Impacket &middot; Active Directory &middot; Home Lab</p>
-          <p>A home-lab exercise in chaining together a full Active Directory attack path
+          <p class="project-desc">A home-lab exercise in chaining together a full Active Directory attack path
             instead of testing each technique in isolation. Started with unauthenticated
             username enumeration via kerbrute's Kerberos pre-authentication timing, then used
             Impacket to test the recovered accounts for AS-REP roasting &mdash; accounts with
@@ -207,6 +213,12 @@
             Walking one identity from anonymous enumeration to a relay-ready misconfiguration
             made it obvious why each of these individually "minor" settings compounds into a
             real path to compromise.</p>
+          <button class="show-more-btn project-desc-toggle" type="button" aria-expanded="false" aria-label="Read more of this project description">
+            <span class="show-more-label">more</span>
+            <svg class="show-more-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
         </article>
 
         <article class="project">
@@ -220,7 +232,7 @@
 
           <h3>WPA2/PMKID Capture &amp; Offline Cracking</h3>
           <p class="project-meta">Flipper Zero &middot; ESP32 Marauder &middot; Aircrack-ng &middot; Home Lab</p>
-          <p>Wireless security testing against a personal lab network, aimed at going beyond
+          <p class="project-desc">Wireless security testing against a personal lab network, aimed at going beyond
             just capturing a handshake and actually recovering the key. Used a Flipper Zero
             with an ESP32 Marauder board to profile nearby SSIDs, BSSIDs, channels, and
             encryption types, then forced a connected client to reassociate with a
@@ -229,6 +241,12 @@
             recovered the pre-shared key on a lab network deliberately configured with a weak
             passphrase. It's a fast, concrete way to demonstrate why a dictionary-crackable
             Wi-Fi password is a real vulnerability, not just a theoretical one.</p>
+          <button class="show-more-btn project-desc-toggle" type="button" aria-expanded="false" aria-label="Read more of this project description">
+            <span class="show-more-label">more</span>
+            <svg class="show-more-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
         </article>
 
         <article class="project">
@@ -242,7 +260,7 @@
 
           <h3>RFID/NFC Badge Cloning</h3>
           <p class="project-meta">Flipper Zero &middot; HID Prox (T5577) &middot; MIFARE Classic &middot; MFKey32 &middot; Home Lab</p>
-          <p>Physical access control testing on two of the most common badge technologies
+          <p class="project-desc">Physical access control testing on two of the most common badge technologies
             still in wide use: low-frequency HID Prox and MIFARE Classic. Cloned a HID Prox
             credential onto a writable T5577 tag, then separately captured MIFARE Classic
             authentication traffic and recovered the per-sector keys with MFKey32, a
@@ -251,6 +269,12 @@
             no access to the original badge's backend system. The exercise is a reminder that
             a lot of physical access control still relies on credential technologies that
             were never designed to resist cloning.</p>
+          <button class="show-more-btn project-desc-toggle" type="button" aria-expanded="false" aria-label="Read more of this project description">
+            <span class="show-more-label">more</span>
+            <svg class="show-more-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
         </article>
 
         <article class="project" hidden>
@@ -264,7 +288,7 @@
 
           <h3>Burp Suite Web/API Testing</h3>
           <p class="project-meta">Burp Suite &middot; Web/API Security &middot; Home Lab</p>
-          <p>Web application and API testing against intentionally vulnerable lab targets,
+          <p class="project-desc">Web application and API testing against intentionally vulnerable lab targets,
             focused on server-side trust boundaries rather than surface-level input
             validation. Used Burp Suite to intercept and modify requests, confirming a
             server-side request forgery by redirecting a vulnerable parameter to an
@@ -276,6 +300,12 @@
             findings map directly to entries on the OWASP API Security Top 10, and reinforced
             testing "can this identity reach this specific object," not just "can this
             identity reach this endpoint."</p>
+          <button class="show-more-btn project-desc-toggle" type="button" aria-expanded="false" aria-label="Read more of this project description">
+            <span class="show-more-label">more</span>
+            <svg class="show-more-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
         </article>
 
         <article class="project" hidden>
@@ -289,7 +319,7 @@
 
           <h3>Secure Self-Hosted Minecraft Server</h3>
           <p class="project-meta">Ubuntu &middot; AMP (CubeCoders) &middot; Cloudflare Zero Trust &middot; Nginx &middot; Personal Project</p>
-          <p>Wanted to run a Minecraft server for friends without paying for a hosted Realm,
+          <p class="project-desc">Wanted to run a Minecraft server for friends without paying for a hosted Realm,
             without exposing a home IP address to the internet, and without handing out one
             shared admin password. Self-hosted the server with CubeCoders AMP on a personally
             managed Ubuntu box, put the web management panel behind an Nginx reverse proxy
@@ -302,6 +332,12 @@
             the app's built-in access controls, while full admin stays with one account
             &mdash; the same layered-access pattern used to protect much higher-value
             internal tools.</p>
+          <button class="show-more-btn project-desc-toggle" type="button" aria-expanded="false" aria-label="Read more of this project description">
+            <span class="show-more-label">more</span>
+            <svg class="show-more-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
         </article>
 
         <article class="project" hidden>
@@ -315,7 +351,7 @@
 
           <h3>Uniform Random Apple Shortcuts Password Generator</h3>
           <p class="project-meta">Apple Shortcuts &middot; iOS/macOS &middot; Personal Project</p>
-          <p>Apple's built-in password generator looked random at a glance, but it always
+          <p class="project-desc">Apple's built-in password generator looked random at a glance, but it always
             produces the same fixed shape &mdash; a set length, exactly one digit, one
             uppercase letter, two hyphens, and lowercase everywhere else. That fixed
             structure quietly shrinks the real keyspace: Apple advertises around 71 bits of
@@ -328,6 +364,12 @@
             106 bits of entropy &mdash; about 7.5&times;10<sup>31</sup> possibilities &mdash;
             versus the fixed-format original, using nothing but Apple's own visual scripting
             tool.</p>
+          <button class="show-more-btn project-desc-toggle" type="button" aria-expanded="false" aria-label="Read more of this project description">
+            <span class="show-more-label">more</span>
+            <svg class="show-more-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
         </article>
       </div>
 
