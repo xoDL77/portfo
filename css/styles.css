@@ -186,7 +186,6 @@ img, video { max-width: 100%; height: auto; }
 
 .mail-flyout-address {
   color: var(--text);
-  text-decoration: underline;
   font-size: 0.85rem;
 }
 
@@ -477,7 +476,7 @@ p { max-width: 70ch; }
   .skip-link,
   .nav-links,
   .theme-toggle,
-  .mail-flyout,
+  .copy-email-btn,
   .hero-actions,
   .demo,
   .back-to-top,
@@ -488,6 +487,23 @@ p { max-width: 70ch; }
   /* Header holds contact info now, so keep it (minus the pieces above)
      instead of hiding the whole thing like before. */
   .site-header { position: static; }
+
+  /* The email is plain text now (no mailto: link to auto-append via the
+     rule below), and the flyout is normally an absolutely-positioned,
+     opacity:0 overlay meant for hover/tap — neither works on paper. Force
+     it into normal inline flow instead, so the address actually prints
+     next to the icon rather than not existing on the page at all. */
+  .mail-flyout {
+    position: static;
+    display: inline !important;
+    opacity: 1 !important;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 0.4rem;
+  }
+
+  .mail-flyout-address { text-decoration: underline; }
 
   /* "Show more" is a JS interaction with nothing to click on paper —
      print every project/cert card, not just the first 4. */

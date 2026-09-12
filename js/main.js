@@ -69,7 +69,7 @@
   var status = document.getElementById('copy-email-status');
   if (!btn) return;
 
-  var email = 'cvportfolio.gray652@passmail.net';
+  var email = 'contact@cesarspace.online';
   var resetTimer;
   var closeFlyoutTimer;
 
@@ -270,6 +270,35 @@
   // path too, or a keyboard user on a narrow screen gets the same overflow.
   trigger.addEventListener('focus', positionFlyout);
 
+  // Tapping/clicking the trigger also focuses it, and :focus-within alone
+  // would then keep the flyout visible forever regardless of `.is-open` —
+  // every close path has to blur whatever's focused inside .mail-control,
+  // not just toggle the class.
+  function closeFlyout() {
+    control.classList.remove('is-open');
+    if (control.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
+  }
+
+  // Closing on scroll/touchmove applies no matter which branch below ends
+  // up running. `hover: hover` is a reasonable signal but not a perfectly
+  // reliable one on hybrid touch+mouse hardware — a device that matches it
+  // but is actually being scrolled by touch would otherwise have no close
+  // path for that gesture at all (the hover branch below only listens for
+  // mouseenter/mouseleave). This is cheap and harmless when nothing's open
+  // either way.
+  //
+  // `scroll` alone also visibly lags on iOS Safari on its own: an active
+  // touch-scroll runs on the compositor, and it can defer a scroll
+  // handler's style changes until the gesture settles, so the flyout stays
+  // painted through the whole scroll even though the class was removed
+  // right away. `touchmove` fires the instant the finger starts moving,
+  // ahead of that deferral, so pairing both is what actually makes it
+  // disappear immediately rather than only once scrolling stops.
+  window.addEventListener('scroll', closeFlyout, { passive: true });
+  window.addEventListener('touchmove', closeFlyout, { passive: true });
+
   var canHover = window.matchMedia('(hover: hover)').matches;
 
   if (canHover) {
@@ -283,24 +312,21 @@
 
     function scheduleClose() {
       clearTimeout(closeTimer);
-      closeTimer = setTimeout(function () {
-        control.classList.remove('is-open');
-      }, 350);
+      closeTimer = setTimeout(closeFlyout, 350);
     }
 
     control.addEventListener('mouseenter', open);
     control.addEventListener('mouseleave', scheduleClose);
 
-    // On desktop the icon is a pure hover trigger, not a button — but
-    // clicking an <a> still focuses it, and :focus-within would then keep
-    // the flyout stuck open indefinitely (until something else takes
-    // focus), ignoring the hover grace period entirely. A real mouse click
-    // has event.detail > 0; a keyboard Enter/Space activation has
-    // detail === 0, so this only intercepts the mouse case and leaves
-    // keyboard activation (and its natural focus behavior) alone.
+    // On desktop the icon is meant to be a pure hover trigger — but
+    // clicking still focuses it, and :focus-within would then keep the
+    // flyout stuck open indefinitely (until something else takes focus),
+    // ignoring the hover grace period entirely. A real mouse click has
+    // event.detail > 0; a keyboard Enter/Space activation has
+    // detail === 0, so this only blurs on an actual pointer click and
+    // leaves keyboard activation (and its natural focus behavior) alone.
     trigger.addEventListener('click', function (e) {
       if (e.detail !== 0) {
-        e.preventDefault();
         trigger.blur();
       }
     });
@@ -308,20 +334,10 @@
     return;
   }
 
-  // Tapping the trigger also focuses it, and :focus-within alone would
-  // then keep the flyout visible forever regardless of `.is-open` — so
-  // every close path here has to blur whatever's focused inside .mail-control,
-  // not just toggle the class.
-  function closeFlyout() {
-    control.classList.remove('is-open');
-    if (control.contains(document.activeElement)) {
-      document.activeElement.blur();
-    }
-  }
-
-  trigger.addEventListener('click', function (e) {
-    if (!control.classList.contains('is-open')) {
-      e.preventDefault();
+  trigger.addEventListener('click', function () {
+    if (control.classList.contains('is-open')) {
+      closeFlyout();
+    } else {
       positionFlyout();
       control.classList.add('is-open');
     }
@@ -332,19 +348,4 @@
       closeFlyout();
     }
   });
-
-  // There's no "tap elsewhere to dismiss" equivalent for scrolling — left
-  // open, the flyout would otherwise ride along indefinitely as the page
-  // scrolls underneath the sticky header. Close it the moment scrolling
-  // starts instead of waiting for an explicit tap outside it.
-  //
-  // `scroll` alone visibly lags on iOS Safari: an active touch-scroll runs
-  // on the compositor, and it can defer a scroll handler's style changes
-  // until the gesture settles, so the flyout stays painted through the
-  // whole scroll even though the class was removed right away. `touchmove`
-  // fires the instant the finger starts moving, ahead of that deferral, so
-  // pairing both is what actually makes it disappear immediately rather
-  // than only once scrolling stops.
-  window.addEventListener('scroll', closeFlyout, { passive: true });
-  window.addEventListener('touchmove', closeFlyout, { passive: true });
 })();
