@@ -31,7 +31,6 @@
   <meta name="twitter:card" content="summary_large_image">
 
   <!-- Favicons -->
-  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="assets/img/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 
@@ -84,27 +83,75 @@
     <section id="projects">
       <h2>Projects &amp; Labs</h2>
 
-      <article class="project">
-        <h3>Agentic AI Vulnerability Assessment Tool</h3>
-        <p class="project-meta">Python &middot; Claude Agent SDK &middot; Personal Project</p>
-        <p><!-- What it does, why you built it, what you learned --></p>
+      <!--
+        One <article class="project"> per project, in a responsive grid.
+        The video is a hover-to-play demo (square aspect ratio) — replace
+        assets/video/demo.* and assets/img/demo-poster.jpg with the real
+        clip when ready; see the Media section in CLAUDE.md for encoding.
+      -->
+      <div class="projects-grid">
+        <article class="project">
+          <figure class="demo">
+            <video class="demo-video" muted loop playsinline preload="metadata"
+                   poster="assets/img/demo-poster.jpg" width="800" height="800">
+              <source src="assets/video/demo.webm" type="video/webm">
+              <source src="assets/video/demo.mp4" type="video/mp4">
+            </video>
+          </figure>
 
-        <!-- Hover-to-play demo. Delete this figure until you have a clip ready. -->
-        <figure class="demo">
-          <video class="demo-video" muted loop playsinline preload="metadata"
-                 poster="assets/img/demo-poster.jpg" width="1280" height="720">
-            <source src="assets/video/demo.webm" type="video/webm">
-            <source src="assets/video/demo.mp4" type="video/mp4">
-          </video>
-          <figcaption>Hover to play. Short description of what the clip shows.</figcaption>
-        </figure>
-      </article>
-
+          <h3>Agentic AI Vulnerability Assessment Tool</h3>
+          <p class="project-meta">Python &middot; Claude Agent SDK &middot; Personal Project</p>
+          <p><!-- What it does, why you built it, what you learned --></p>
+        </article>
+      </div>
     </section>
 
     <section id="certs">
-      <h2>Certifications &amp; Education</h2>
-      <!-- Certs list + UMGC degree -->
+      <h2>Certifications</h2>
+
+      <!--
+        One <article class="cert-card"> per credential. To add a new one:
+        drop the JPEG in assets/certs/ (kebab-case filename) and add a
+        matching card here. Omit .cert-verify for credentials with no
+        Credly badge (e.g. a degree).
+      -->
+      <div class="certs-grid">
+        <article class="cert-card">
+          <img class="cert-image" src="assets/certs/pentest-plus.jpg" alt="CompTIA PenTest+ certificate" width="1400" height="1082" loading="lazy">
+          <h3 class="cert-title">CompTIA PenTest+</h3>
+          <p class="cert-verify">Verify with <a href="https://www.credly.com/badges/893e9ba2-42d3-4b56-922e-d79908ea648e/public_url" target="_blank" rel="noopener noreferrer">Credly</a></p>
+        </article>
+        <article class="cert-card">
+          <img class="cert-image" src="assets/certs/security-plus.jpg" alt="CompTIA Security+ certificate" width="1400" height="1082" loading="lazy">
+          <h3 class="cert-title">CompTIA Security+</h3>
+          <p class="cert-verify">Verify with <a href="https://www.credly.com/badges/abeb1d9f-e3be-4571-bfea-fd5beabeaebd/public_url" target="_blank" rel="noopener noreferrer">Credly</a></p>
+        </article>
+        <article class="cert-card">
+          <img class="cert-image" src="assets/certs/sscp.jpg" alt="(ISC)&sup2; SSCP certificate" width="1400" height="1082" loading="lazy">
+          <h3 class="cert-title">(ISC)&sup2; SSCP</h3>
+          <p class="cert-verify">Verify with <a href="https://www.credly.com/badges/cc08c910-19b8-47a9-a869-72b4d916efad/public_url" target="_blank" rel="noopener noreferrer">Credly</a></p>
+        </article>
+        <article class="cert-card">
+          <img class="cert-image" src="assets/certs/network-plus.jpg" alt="CompTIA Network+ certificate" width="1400" height="1082" loading="lazy">
+          <h3 class="cert-title">CompTIA Network+</h3>
+          <p class="cert-verify">Verify with <a href="https://www.credly.com/badges/9aef0cdb-99f6-4562-ba2a-3d0114cf7c8e/public_url" target="_blank" rel="noopener noreferrer">Credly</a></p>
+        </article>
+        <article class="cert-card">
+          <img class="cert-image" src="assets/certs/linux-essentials.jpg" alt="Linux Essentials certificate" width="1400" height="1082" loading="lazy">
+          <h3 class="cert-title">Linux Essentials</h3>
+          <p class="cert-verify">Verify with <a href="https://www.credly.com/badges/c2b9890b-b2dd-4b77-a0ef-93bc54e045b1/public_url" target="_blank" rel="noopener noreferrer">Credly</a></p>
+        </article>
+        <article class="cert-card">
+          <img class="cert-image" src="assets/certs/cloud-plus.jpg" alt="CompTIA Cloud+ certificate" width="1400" height="1082" loading="lazy">
+          <h3 class="cert-title">CompTIA Cloud+</h3>
+          <p class="cert-verify">Verify with <a href="https://www.credly.com/badges/69339a74-4fec-4239-bc6e-648e1ce88b1d/public_url" target="_blank" rel="noopener noreferrer">Credly</a></p>
+        </article>
+        <article class="cert-card">
+          <img class="cert-image" src="assets/certs/aws-ccp.jpg" alt="AWS Certified Cloud Practitioner certificate" width="1400" height="1082" loading="lazy">
+          <h3 class="cert-title">AWS Certified Cloud Practitioner</h3>
+          <p class="cert-verify">Verify with <a href="https://www.credly.com/badges/6afecd0d-25e5-4164-bf71-714467b96241/public_url" target="_blank" rel="noopener noreferrer">Credly</a></p>
+        </article>
+      </div>
     </section>
 
     <section id="contact">

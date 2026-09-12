@@ -185,10 +185,55 @@ p { max-width: 70ch; }
 
 .btn:hover { border-color: var(--accent); color: var(--accent); }
 
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.project { text-align: left; }
+
 .project-meta {
   color: var(--text-muted);
+  font-style: italic;
   font-size: 0.9rem;
   margin-top: 0;
+}
+
+/* ============================================================
+   Certifications
+   ============================================================ */
+
+.certs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.cert-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.cert-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.cert-title {
+  font-size: 1.05rem;
+  margin: 0.75rem 1rem 0.25rem;
+}
+
+.cert-verify {
+  margin: 0 1rem 1rem;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text-muted);
 }
 
 .copy-email-btn {
@@ -326,6 +371,11 @@ p { max-width: 70ch; }
   main { padding: 3rem 2rem; }
 
   h1 { font-size: 3rem; }
+
+  .projects-grid,
+  .certs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* ============================================================

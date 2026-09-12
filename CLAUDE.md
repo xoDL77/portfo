@@ -52,6 +52,31 @@ content must stay sanitized:
   absent. Vanilla JS, no build step, so no ES module syntax.
 - Accessibility is part of done: visible `:focus-visible` rings, working skip
   link, `prefers-reduced-motion` respected, `aria-label` on icon-only controls.
+- **Certifications are a card grid**, viewable inline — not a PDF behind a
+  button. Each `<article class="cert-card">` in `#certs` holds a landscape
+  (4:3, enforced via CSS `aspect-ratio`) image at
+  `assets/certs/<kebab-case-name>.jpg`, a title, and a "Verify with Credly"
+  link (omitted for credentials with no Credly badge, e.g. the degree). To add
+  a new one: drop the JPEG in that folder and add a matching card — no JSON
+  manifest or build step, consistent with how Projects are hand-authored.
+  `.projects-grid` and `.certs-grid` share the same 1-col mobile /
+  2-col-at-768px responsive pattern.
+- **Favicon/touch-icon are raster, not the originally-planned SVG monogram.**
+  Source is a hand-drawn transparent PNG from the owner (originally a
+  squinting face + a separate heart, spread across a tall canvas). Final mark
+  is the **face only** — an earlier version stacked face+heart into one
+  square, but at favicon size the two elements read as squished/muddy, so the
+  heart was dropped and the face alone fills the frame instead, legible even
+  at 16×16. White line art gets a dilated-alpha dark outline (not a solid
+  fill) so it stays visible on both light and dark browser chrome, since
+  white-on-transparent alone is invisible on light tab bars.
+  `assets/img/favicon.ico` is multi-size (16/32/48) ICO, transparency kept;
+  `assets/img/apple-touch-icon.png` is the same art flattened onto solid
+  `#0d1117` (the dark theme's `--bg`) at 180×180, since iOS renders alpha as
+  black. No `favicon.svg` link exists — don't re-add one without a real
+  vector file to back it. **Browsers cache favicons aggressively** outside
+  the normal HTTP cache — a hard-refresh won't show a changed one, closing
+  and reopening the tab (or a private window) will.
 
 ## Media
 
@@ -59,32 +84,69 @@ content must stay sanitized:
 GIF costs ~20x the bytes and caps at 256 colors, which bands terminal text and
 syntax highlighting badly. Videos play on hover, pause and reset on exit.
 
+- **Square aspect ratio (1:1)**, matching the project card layout — set
+  `width="800" height="800"` (or your real clip's square dimensions) on the
+  `<video>` so there's no layout shift.
 - `muted` is required or browsers block programmatic playback.
 - `playsinline` stops iOS from forcing fullscreen.
-- `width`/`height` attributes prevent layout shift during load.
 - `(hover: hover)` media query gates the behavior; touch devices get
   tap-to-toggle instead, or demos would be dead on mobile.
 - `prefers-reduced-motion` disables autoplay entirely.
 
 Encode with ffmpeg to both `.webm` (VP9) and `.mp4` (H.264), `-an` to strip
-audio, `-movflags +faststart` on the mp4, plus a poster JPEG.
+audio, `-movflags +faststart` on the mp4, plus a poster JPEG. ffmpeg is
+installed via Homebrew on this machine now (it wasn't before).
 
 ## State
 
 Done: repo, SSH auth, Pages deploy, responsive layout, theme toggle, skip link,
-focus styles, reduced-motion, Open Graph tags, favicon links, résumé download
-button, print stylesheet, custom 404, hover-play video component,
-copy-email-to-clipboard button, scroll-spy nav, back-to-top button.
+focus styles, reduced-motion, Open Graph tags, résumé download button, print
+stylesheet, custom 404, hover-play video component, copy-email-to-clipboard
+button, scroll-spy nav, back-to-top button, Certifications card grid,
+Projects & Labs grid layout, lazy loading (the cert images are the first
+`<img>` tags in the site, so this Tier 2 item is now actually in effect —
+see `loading="lazy"` on `.cert-image`), favicon (`.ico`, multi-size),
+apple-touch-icon, and OG image. **No assets are 404ing anymore** — this was
+the last of them.
 
-Lazy loading (the remaining Tier 2 item) is deferred — `index.html` has no
-`<img>` tags yet to apply `loading="lazy"` to. Add it to any below-fold image
-introduced during step 3 (Content build-out).
+The OG image is a light-background "Cesar Vaca / PORTFOLIO" wordmark the
+owner supplied, not the dark-background name+title+clearance design
+originally sketched in the roadmap below — that plan is superseded, this is
+the real design now. It was resized/padded (not cropped) from 1000×612 to
+exactly 1200×630 with matching white padding on the sides.
 
-Assets not yet created — referenced in markup but 404ing until added:
-`assets/Cesar-Vaca-Resume.pdf`, `assets/img/favicon.svg`,
-`assets/img/og-image.png` (must be 1200×630).
+**Cert images are real now**, not placeholders — the owner sent the actual
+PDF certificates (sourced from
+`~/Library/CloudStorage/ProtonDrive-cesar@cvmail.me-folder/career/certs/`,
+also mirrored under iCloud `~/Library/Mobile Documents/.../work/certs/`), and
+each was rasterized with PyMuPDF at 1400px-long-edge, ~85 quality JPEG
+(78–162KB each — cheap enough to not bother lazy-generating srcset variants).
+All 7 source PDFs are US Letter landscape (792×612pt, or equivalent), so the
+JPEGs are ~1.294:1 — very close to but not exactly the `.cert-image`
+CSS's 4:3 box; `object-fit: cover` absorbs the difference invisibly.
 
-Placeholder still in `index.html`: `YOUR-HANDLE` in the LinkedIn URL.
+The **UMGC degree card is removed for now** — the owner doesn't have that
+credential's file ready yet. Re-add it the same way: a `cert-card` with an
+image, `<h3>`, and no `.cert-verify` (degrees don't have Credly badges).
+
+The "Verify with Credly" links are **real** — extracted from the hyperlink
+annotations in `assets/Cesar-Vaca-Resume.pdf` (the visible cert names in that
+PDF are underlined/linked text; `strings` on the PDF surfaces the actual
+`credly.com/badges/...` URIs), matched to the 7 certs sent.
+
+**Still only 7 of the 9 certifications the owner mentioned are represented**
+(the degree makes 8, but it's pulled for now — see above). While locating
+the sent PDFs, a `career/certs/CompTIA/CSIS/` folder turned up on the
+owner's drive ("CompTIA Secure Infrastructure Specialist — CSIS") that was
+never mentioned in conversation — flagged, not assumed; **do not add it
+without the owner confirming** it's real, current, and meant to be public.
+That leaves at least one certification still fully unaccounted for either
+way.
+
+`assets/img/demo-poster.jpg` and `assets/video/demo.{webm,mp4}` are **still
+placeholders** — a static gray "Demo placeholder" frame held for 4 seconds,
+square (800×800), no audio. Swap for a real screen-capture per the Media
+section and step 4 below.
 
 Content is empty by design — the owner writes it.
 
@@ -92,14 +154,10 @@ Content is empty by design — the owner writes it.
 
 Work these in order. Each step assumes the previous one is done.
 
-### 1. Missing assets (blocking — links currently 404)
+### 1. ~~Missing assets~~ — done
 
-- `assets/Cesar-Vaca-Resume.pdf` — public version, alias email, no phone number.
-- `assets/img/favicon.svg` — simple monogram, inline SVG is fine.
-- `assets/img/og-image.png` — exactly 1200×630. Name, title, clearance on the
-  dark background. This is the LinkedIn preview card, so it matters more than
-  it looks.
-- Replace `YOUR-HANDLE` in the LinkedIn URL in `index.html`.
+Favicon, apple-touch-icon, and OG image are all in place (see State above for
+what they actually turned out to be vs. the original plan).
 
 ### 2. Tier 2 quality-of-life
 
@@ -114,28 +172,33 @@ Work these in order. Each step assumes the previous one is done.
   scroll listener in `js/main.js` (a plain scroll listener, throttled — a
   pixel threshold like "after 400px" doesn't map cleanly onto an
   `IntersectionObserver` sentinel the way section boundaries do).
-- **Lazy loading.** `loading="lazy"` on any image below the fold. Videos already
-  use `preload="metadata"`. Do not lazy-load the OG image or anything in the hero.
-  Deferred — no `<img>` tags exist yet; pick this up in step 3.
+- ~~Lazy loading~~ — done. `loading="lazy"` on every `.cert-image`. Videos
+  already use `preload="metadata"`. Keep doing this for any new below-fold
+  `<img>`; do not lazy-load the OG image or anything in the hero.
 
 ### 3. Content build-out
 
 Order matters — Projects first, because it's the hard one and everything else
 is quick by comparison.
 
-- **Projects & Labs.** The differentiator. One `<article class="project">` per
-  item, each structured as context → method → outcome, not a resume bullet.
-  Candidates from the résumé: the agentic AI vulnerability-assessment tool
-  (strongest, it's a build not just an exercise), the Active Directory attack
-  chain, WPA2/PMKID capture and offline cracking, RFID/NFC badge cloning, and
-  the Burp Suite web/API testing work. Personal projects can carry more detail
-  than anything work-adjacent.
+- **Projects & Labs.** The differentiator, and the one piece of this still
+  genuinely unbuilt. `.projects-grid` layout is done (responsive 2-col,
+  square hover-video, left-aligned text — see Conventions), with one
+  `<article class="project">` scaffolded for the agentic AI tool but its
+  description is still an empty comment. Write the description
+  (context → method → outcome, not a résumé bullet) and add more `<article>`
+  cards for: the Active Directory attack chain, WPA2/PMKID capture and
+  offline cracking, RFID/NFC badge cloning (HID Prox + MIFARE Classic per the
+  résumé), and the Burp Suite web/API testing work. Personal projects can
+  carry more detail than anything work-adjacent.
 - **Skills & Tooling.** Grouped lists — Recon, Exploitation, Wireless/RF,
   Scripting & DevOps. Resist making this an unfiltered tool dump.
 - **About.** Two or three sentences. Air Force → Space Force → private sector
   is a genuinely distinctive arc; lead with it.
-- **Certifications & Education.** Pentest+, Security+, SSCP, Network+, Linux
-  Essentials, Cloud+, AWS CCP, plus the UMGC BS in Cybersecurity Technology.
+- ~~Certifications~~ — done for the 7 certs with real images and Credly
+  links (see State above). Still open: add back the UMGC degree card once
+  that file's ready, and resolve the missing 2 certifications (9 mentioned,
+  7 shown — see the CSIS-folder note in State, unconfirmed).
 
 ### 4. Demo videos
 
