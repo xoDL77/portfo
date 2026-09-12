@@ -69,7 +69,7 @@
   var status = document.getElementById('copy-email-status');
   if (!btn) return;
 
-  var email = 'cvportfolio.gray652@passmail.net';
+  var email = 'contact@cesarspace.online';
   var resetTimer;
   var closeFlyoutTimer;
 
@@ -228,7 +228,9 @@
 
 /* ============================================================
    Header mail flyout
-   Hover reveals the email address + copy button. A plain CSS :hover
+   Hover reveals the plain-text email address + copy button (the
+   trigger is a <button>, not a mailto link — copying is the only
+   way to get the address out of the page). A plain CSS :hover
    closes the instant the cursor leaves the trigger's box, which is
    too strict when there's any gap between the icon and the flyout
    below it — the mouse is briefly "outside" everything mid-transit.
@@ -291,16 +293,15 @@
     control.addEventListener('mouseenter', open);
     control.addEventListener('mouseleave', scheduleClose);
 
-    // On desktop the icon is a pure hover trigger, not a button — but
-    // clicking an <a> still focuses it, and :focus-within would then keep
-    // the flyout stuck open indefinitely (until something else takes
-    // focus), ignoring the hover grace period entirely. A real mouse click
-    // has event.detail > 0; a keyboard Enter/Space activation has
-    // detail === 0, so this only intercepts the mouse case and leaves
-    // keyboard activation (and its natural focus behavior) alone.
+    // On desktop the icon is a pure hover trigger. Clicking a <button>
+    // still focuses it, and :focus-within would then keep the flyout stuck
+    // open indefinitely (until something else takes focus), ignoring the
+    // hover grace period entirely. A real mouse click has event.detail > 0;
+    // a keyboard Enter/Space activation has detail === 0, so this only
+    // blurs after a genuine mouse click and leaves keyboard activation
+    // (and its natural focus behavior) alone.
     trigger.addEventListener('click', function (e) {
       if (e.detail !== 0) {
-        e.preventDefault();
         trigger.blur();
       }
     });
@@ -319,9 +320,10 @@
     }
   }
 
-  trigger.addEventListener('click', function (e) {
-    if (!control.classList.contains('is-open')) {
-      e.preventDefault();
+  trigger.addEventListener('click', function () {
+    if (control.classList.contains('is-open')) {
+      closeFlyout();
+    } else {
       positionFlyout();
       control.classList.add('is-open');
     }
