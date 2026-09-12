@@ -45,6 +45,20 @@ content must stay sanitized:
 - **Mobile-first CSS.** Base styles target narrow screens; `@media (min-width: …)`
   adds complexity upward. Single breakpoint at 768px so far. Do not add
   desktop-first `max-width` queries — it fights the existing cascade.
+- **The typeface is a serif system-font stack**
+  (`Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+  "Times New Roman", serif` on `body`, inherited everywhere — there's no
+  other `font-family` declaration in the CSS), swapped from the original
+  `system-ui` sans stack for a more elegant, "soft on the eyes" feel the
+  owner asked for, specifically namechecking Times New Roman. Georgia leads
+  the stack instead — same serif character, but drawn for screen legibility
+  at body-text sizes, where Times New Roman (a metal-type-era face) gets
+  thin and cramped; it still falls through to Times New Roman itself on
+  systems that lack every other entry. **This still respects the "system
+  font stack only" hard constraint above** — every name in the list is an
+  OS-bundled font, not a downloaded or self-hosted one; don't turn this into
+  a `@font-face` + font-file addition (even self-hosted) without confirming
+  that constraint is meant to be relaxed.
 - **Theming via CSS custom properties** on `[data-theme]` at `:root`. Both dark
   and light palettes must be updated together when adding a color. Every new
   color goes in the token block, never hardcoded in a rule.
