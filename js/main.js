@@ -196,7 +196,7 @@
    ============================================================ */
 
 (function () {
-  function setupExpandable(gridSelector, itemSelector, buttonId, moreLabel, lessLabel) {
+  function setupExpandable(gridSelector, itemSelector, buttonId, moreLabel, lessLabel, noun) {
     var grid = document.querySelector(gridSelector);
     var btn = document.getElementById(buttonId);
     if (!grid || !btn) return;
@@ -223,7 +223,7 @@
 
       btn.setAttribute('aria-expanded', String(expanded));
       btn.setAttribute('aria-label', expanded ? lessLabel : moreLabel);
-      if (label) label.textContent = expanded ? 'less' : 'more';
+      if (label) label.textContent = (expanded ? 'less ' : 'more ') + noun;
     }
 
     btn.addEventListener('click', function () {
@@ -241,8 +241,8 @@
     render();
   }
 
-  setupExpandable('.projects-grid', '.project', 'projects-toggle', 'Show more projects', 'Show fewer projects');
-  setupExpandable('.certs-grid', '.cert-card', 'certs-toggle', 'Show more certifications', 'Show fewer certifications');
+  setupExpandable('.projects-grid', '.project', 'projects-toggle', 'Show more projects', 'Show fewer projects', 'projects');
+  setupExpandable('.certs-grid', '.cert-card', 'certs-toggle', 'Show more certifications', 'Show fewer certifications', 'certs');
 })();
 
 
@@ -285,9 +285,9 @@
       pair.toggle.setAttribute('aria-expanded', String(pair.expanded));
       pair.toggle.setAttribute(
         'aria-label',
-        pair.expanded ? 'Show less of this project description' : 'Read more of this project description'
+        pair.expanded ? 'Read less of this project description' : 'Read more of this project description'
       );
-      if (label) label.textContent = pair.expanded ? 'less' : 'more';
+      if (label) label.textContent = pair.expanded ? 'read less' : 'read more';
 
       // Re-measure the ones still collapsed — a card's height changing
       // doesn't reflow any other card's text width, but this stays cheap

@@ -211,26 +211,35 @@ content must stay sanitized:
   already visible). The toggle button (`#projects-toggle`, `#certs-toggle`)
   flips an `expanded` flag and re-renders — no navigation, same page. The
   button is intentionally minimal: a muted, non-bold `.show-more-label`
-  ("more"/"less") plus a `.show-more-arrow` chevron, arrow **below** the
-  label pointing down when collapsed, flipped to **above** the label and
-  rotated 180° (pointing up) when expanded via `flex-direction:
-  column-reverse` on `[aria-expanded="true"]` — no visible button
-  border/background, just muted text that brightens on hover. The full
-  "Show more/fewer projects" phrasing still exists as the button's
-  `aria-label` for screen readers even though the visible text is just
-  "more"/"less". Adding an 8th project or 9th cert later needs nothing here
-  — the toggle logic reads the DOM and counts by index, it doesn't hardcode
-  which specific cards start hidden.
+  plus a `.show-more-arrow` chevron, arrow **below** the label pointing
+  down when collapsed, flipped to **above** the label and rotated 180°
+  (pointing up) when expanded via `flex-direction: column-reverse` on
+  `[aria-expanded="true"]` — no visible button border/background, just
+  muted text that brightens on hover. The visible label names what there's
+  more of ("more projects"/"less projects", "more certs"/"less certs") via
+  a `noun` argument passed into `setupExpandable()`, rather than a bare
+  "more"/"less" that leaves the reader guessing — the fuller
+  "Show more/fewer projects" phrasing still exists separately as the
+  button's `aria-label` for screen readers. Adding an 8th project or 9th
+  cert later needs nothing here — the toggle logic reads the DOM and counts
+  by index, it doesn't hardcode which specific cards start hidden.
 
 - **Each project's description (`.project-desc`) is clamped to 3 lines**
   with an ellipsis, via `-webkit-line-clamp: 3` (`display: -webkit-box;
   -webkit-box-orient: vertical; overflow: hidden;`), independent of and in
   addition to the card-level show/hide above — this clamp applies to every
   visible project card's body text at any screen width, not just mobile.
-  A sibling `.project-desc-toggle` button (same `.show-more-btn` look as
-  the grid-level toggle, just left-aligned instead of centered since it
-  sits inline under paragraph text) expands/collapses just that paragraph.
-  A "Project description clamp" IIFE in `js/main.js` pairs each
+  A sibling `.project-desc-toggle` button expands/collapses just that
+  paragraph — visually distinct from the grid-level toggle on purpose: no
+  chevron, italicized, tucked directly under the paragraph with no gap, and
+  labeled "read more"/"read less" rather than a bare "more"/"less" (that
+  wording only makes sense for the grid-level toggle, which sits well below
+  its content and needs the "show more of the same grid" framing; this one
+  sits right against the text it's toggling, so "read more" reads more
+  naturally there). It's a standalone `.project-desc-toggle` style, not a
+  reuse of `.show-more-btn` — don't merge them back into one class, they're
+  meant to look different. A "Project description clamp" IIFE in
+  `js/main.js` pairs each
   `.project-desc` with the `.project-desc-toggle` immediately after it via
   `nextElementSibling` — the two must stay adjacent siblings in the markup,
   or the pairing breaks silently (the `if (!toggle || …) return` guard
