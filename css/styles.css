@@ -129,18 +129,33 @@ img, video { max-width: 100%; height: auto; }
   text-underline-offset: 0.3em;
 }
 
-.theme-toggle {
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: 6px;
-  padding: 0.35rem 0.6rem;
+  padding: 0;
   cursor: pointer;
-  font-size: 1rem;
-  align-self: flex-start;
+  text-decoration: none;
 }
 
-.theme-toggle:hover { background: var(--bg); }
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.icon-btn .icon { width: 16px; height: 16px; }
+
+.theme-toggle { font-size: 1rem; }
 
 /* ============================================================
    Layout
@@ -168,7 +183,6 @@ h2 {
 p { max-width: 70ch; }
 
 .tagline { color: var(--text-muted); margin: 0.25rem 0; }
-.clearance { color: var(--text-muted); font-size: 0.9rem; }
 
 .hero-actions { margin-top: 1.5rem; }
 
@@ -217,6 +231,23 @@ p { max-width: 70ch; }
 
 .project { text-align: left; }
 
+.show-more-wrap {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.show-more-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.show-more-btn:hover { border-color: var(--accent); color: var(--accent); }
+
 .project-meta {
   color: var(--text-muted);
   font-style: italic;
@@ -260,28 +291,8 @@ p { max-width: 70ch; }
   color: var(--text-muted);
 }
 
-.copy-email-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  vertical-align: middle;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 6px;
-  padding: 0;
-  cursor: pointer;
-}
-
-.copy-email-btn:hover { border-color: var(--accent); color: var(--accent); }
-
 .copy-email-btn .icon {
   position: absolute;
-  width: 16px;
-  height: 16px;
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
@@ -390,8 +401,6 @@ p { max-width: 70ch; }
     align-items: center;
   }
 
-  .theme-toggle { align-self: auto; }
-
   main { padding: 3rem 2rem; }
 
   h1 { font-size: 3rem; }
@@ -422,14 +431,26 @@ p { max-width: 70ch; }
    ============================================================ */
 
 @media print {
-  .site-header,
   .skip-link,
+  .nav-links,
   .theme-toggle,
+  .copy-email-btn,
   .hero-actions,
   .demo,
-  .copy-email-btn,
-  .back-to-top {
+  .back-to-top,
+  .show-more-wrap {
     display: none !important;
+  }
+
+  /* Header holds contact info now, so keep it (minus the pieces above)
+     instead of hiding the whole thing like before. */
+  .site-header { position: static; }
+
+  /* "Show more" is a JS interaction with nothing to click on paper —
+     print every project/cert card, not just the first 4. */
+  .project[hidden],
+  .cert-card[hidden] {
+    display: block !important;
   }
 
   body {
@@ -445,7 +466,8 @@ p { max-width: 70ch; }
   a { color: #000; text-decoration: underline; }
 
   /* Show destinations of links, since a printed page can't be clicked */
-  main a[href^="http"]::after {
+  main a[href^="http"]::after,
+  .nav-controls a[href]::after {
     content: " (" attr(href) ")";
     font-size: 0.85em;
     word-break: break-all;

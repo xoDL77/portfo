@@ -81,6 +81,26 @@ content must stay sanitized:
   vector file to back it. **Browsers cache favicons aggressively** outside
   the normal HTTP cache — a hard-refresh won't show a changed one, closing
   and reopening the tab (or a private window) will.
+- **There is no Contact section.** Contact lives in the sticky header instead
+  (`.nav-controls`, inside `.nav`): a `mailto:` icon link, the copy-email
+  button, and a LinkedIn icon link, so it's visible on every scroll position
+  without the visitor hunting for it. All three share the `.icon-btn` base
+  class (2rem square, border, radius) with theme-toggle now also using it for
+  consistent sizing. The LinkedIn icon is a hand-drawn-free `<svg>` — a
+  rounded-square outline plus an `<text>` "in" glyph, not a copied brand
+  asset. `#copy-email-status` (the `aria-live` region for the copy
+  confirmation) lives directly under `</header>`, outside the header itself,
+  so it isn't affected by the print stylesheet hiding most of the header (see
+  Gotchas).
+- **Projects and Certifications each show only their first 4 cards**; the
+  rest carry a plain `hidden` attribute in the markup. A `setupExpandable()`
+  helper in `js/main.js` (one call per grid) wires a "Show N more …" /
+  "Show fewer …" toggle button (`#projects-toggle`, `#certs-toggle`) that
+  flips the `hidden` attribute on the extra cards — no navigation, same
+  page. The count and singular/plural wording are computed from how many
+  cards actually carry `hidden`, so adding an 8th project or a 9th cert
+  later doesn't require touching the button's text or count by hand — just
+  add `hidden` to the new card if it should start collapsed.
 
 ## Media
 
@@ -114,6 +134,15 @@ image. **No assets are 404ing anymore** — this was the last of them.
 cards), and Certifications (7 of 9) are all written. See the Content
 build-out roadmap step for what each turned out to be and what's still
 open.
+
+**"TS/SCI Security Clearance" no longer appears anywhere on the page** —
+removed from the hero (was a `<p class="clearance">` under the tagline,
+now-unused CSS rule deleted too) and from `og:description`, per the owner's
+call to drop it, not just visually hide it. The `<title>` and
+`meta name="description"` never mentioned it and are unchanged. This is
+purely a content/marketing decision, unrelated to the Operational security
+section above (which is about sanitizing project *detail*, not about
+whether the clearance is mentioned at all).
 
 The OG image is a light-background "Cesar Vaca / PORTFOLIO" wordmark the
 owner supplied, not the dark-background name+title+clearance design
@@ -173,9 +202,11 @@ what they actually turned out to be vs. the original plan).
   handler in `js/main.js`.
 - ~~Scroll-spy nav~~ — done. `IntersectionObserver` over `main section[id]`
   plus a `#scroll-sentinel` at the end of `<main>` so the last nav link
-  (Contact) still activates on short pages where the section's midpoint never
-  crosses the detection band before scrolling runs out. Keep the sentinel if
-  content grows — cheap, and it costs nothing once pages are taller.
+  (Certifications, now that Contact is a header element, not a section —
+  see State below) still activates on short pages where the section's
+  midpoint never crosses the detection band before scrolling runs out. Keep
+  the sentinel if content grows — cheap, and it costs nothing once pages
+  are taller.
 - ~~Back-to-top button~~ — done. `#back-to-top` in `index.html`, rAF-throttled
   scroll listener in `js/main.js` (a plain scroll listener, throttled — a
   pixel threshold like "after 400px" doesn't map cleanly onto an
@@ -253,3 +284,10 @@ shouldn't be public.
 - The owner is new to VS Code and Git. Explain terminal commands rather than
   just issuing them, and prefer reversible operations (`mv` to Trash over
   `rm -rf`) when cleaning up.
+- **Print stylesheet hides most of `.site-header`** (nav links, theme
+  toggle) but deliberately leaves it in the DOM/visible as a container now
+  that contact info lives there — don't go back to hiding `.site-header`
+  wholesale, that was tried and it silently deletes the only copy of the
+  contact info from the printed page. The print block also force-shows
+  every `.project[hidden]`/`.cert-card[hidden]` card, since "click Show
+  more" isn't a thing on paper.

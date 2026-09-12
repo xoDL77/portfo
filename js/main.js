@@ -169,3 +169,50 @@
     window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   });
 })();
+
+
+/* ============================================================
+   Show more (Projects / Certifications)
+   Cards beyond the first N ship with the `hidden` attribute; this
+   reveals them in place instead of navigating anywhere.
+   ============================================================ */
+
+(function () {
+  function setupExpandable(gridSelector, itemSelector, buttonId, singular, plural) {
+    var grid = document.querySelector(gridSelector);
+    var btn = document.getElementById(buttonId);
+    if (!grid || !btn) return;
+
+    var extraItems = Array.prototype.filter.call(
+      grid.querySelectorAll(itemSelector),
+      function (el) { return el.hasAttribute('hidden'); }
+    );
+
+    if (!extraItems.length) {
+      btn.hidden = true;
+      return;
+    }
+
+    var label = extraItems.length === 1 ? singular : plural;
+
+    function render(expanded) {
+      btn.setAttribute('aria-expanded', String(expanded));
+      btn.textContent = expanded
+        ? 'Show fewer ' + plural
+        : 'Show ' + extraItems.length + ' more ' + label;
+    }
+
+    render(false);
+
+    btn.addEventListener('click', function () {
+      var expanded = btn.getAttribute('aria-expanded') === 'true';
+      extraItems.forEach(function (el) {
+        el.hidden = expanded;
+      });
+      render(!expanded);
+    });
+  }
+
+  setupExpandable('.projects-grid', '.project', 'projects-toggle', 'project', 'projects');
+  setupExpandable('.certs-grid', '.cert-card', 'certs-toggle', 'certification', 'certifications');
+})();
