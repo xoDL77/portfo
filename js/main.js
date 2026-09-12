@@ -71,14 +71,29 @@
 
   var email = 'cvportfolio.gray652@passmail.net';
   var resetTimer;
+  var closeFlyoutTimer;
 
   function showCopied(statusText) {
     btn.classList.add('is-copied');
     if (status) status.textContent = statusText;
+
     clearTimeout(resetTimer);
     resetTimer = setTimeout(function () {
       btn.classList.remove('is-copied');
     }, 1200);
+
+    // Start closing the header flyout a bit before the checkmark reverts
+    // (not at the same instant) — the flyout's own fade takes ~0.15s, and
+    // starting both transitions simultaneously let the icon flip back to
+    // the plain clipboard shape while still faintly visible through the
+    // fade, flashing for a split second. Closing early enough that the
+    // flyout is already gone by the time the icon reverts hides that.
+    clearTimeout(closeFlyoutTimer);
+    closeFlyoutTimer = setTimeout(function () {
+      var flyoutControl = btn.closest('.mail-control');
+      if (flyoutControl) flyoutControl.classList.remove('is-open');
+      btn.blur();
+    }, 1000);
   }
 
   btn.addEventListener('click', function () {
@@ -178,10 +193,12 @@
    ============================================================ */
 
 (function () {
-  function setupExpandable(gridSelector, itemSelector, buttonId, singular, plural) {
+  function setupExpandable(gridSelector, itemSelector, buttonId, moreLabel, lessLabel) {
     var grid = document.querySelector(gridSelector);
     var btn = document.getElementById(buttonId);
     if (!grid || !btn) return;
+
+    var label = btn.querySelector('.show-more-label');
 
     var extraItems = Array.prototype.filter.call(
       grid.querySelectorAll(itemSelector),
@@ -193,26 +210,141 @@
       return;
     }
 
-    var label = extraItems.length === 1 ? singular : plural;
-
-    function render(expanded) {
-      btn.setAttribute('aria-expanded', String(expanded));
-      btn.textContent = expanded
-        ? 'Show fewer ' + plural
-        : 'Show ' + extraItems.length + ' more ' + label;
-    }
-
-    render(false);
-
     btn.addEventListener('click', function () {
       var expanded = btn.getAttribute('aria-expanded') === 'true';
       extraItems.forEach(function (el) {
         el.hidden = expanded;
       });
-      render(!expanded);
+      btn.setAttribute('aria-expanded', String(!expanded));
+      btn.setAttribute('aria-label', expanded ? moreLabel : lessLabel);
+      if (label) label.textContent = expanded ? 'more' : 'less';
     });
   }
 
-  setupExpandable('.projects-grid', '.project', 'projects-toggle', 'project', 'projects');
-  setupExpandable('.certs-grid', '.cert-card', 'certs-toggle', 'certification', 'certifications');
+  setupExpandable('.projects-grid', '.project', 'projects-toggle', 'Show more projects', 'Show fewer projects');
+  setupExpandable('.certs-grid', '.cert-card', 'certs-toggle', 'Show more certifications', 'Show fewer certifications');
+})();
+
+
+/* ============================================================
+   Header mail flyout
+   Hover reveals the email address + copy button. A plain CSS :hover
+   closes the instant the cursor leaves the trigger's box, which is
+   too strict when there's any gap between the icon and the flyout
+   below it — the mouse is briefly "outside" everything mid-transit.
+   A short close delay (cleared on re-entry) absorbs that instead of
+   requiring pixel-perfect mouse geometry. Touch devices get
+   tap-to-toggle, since hover doesn't exist there.
+   ============================================================ */
+
+(function () {
+  var control = document.querySelector('.mail-control');
+  var trigger = document.getElementById('mail-trigger');
+  var flyout = control ? control.querySelector('.mail-flyout') : null;
+  if (!control || !trigger || !flyout) return;
+
+  // The flyout is centered under the icon by default (left: 50% + a CSS
+  // translateX(-50%)). That centering overflows off-screen when the icon
+  // sits near either edge — the icon is the leftmost header control on
+  // narrow layouts, but sits near the right edge of the nav on desktop.
+  // Nudge it back on-screen with an extra translateX offset rather than
+  // hardcoding a side, since which edge is at risk depends on viewport
+  // width and can't be known up front.
+  function positionFlyout() {
+    flyout.style.transform = 'translateX(-50%)';
+    var margin = 8;
+    var rect = flyout.getBoundingClientRect();
+    var shift = 0;
+    if (rect.left < margin) {
+      shift = margin - rect.left;
+    } else if (rect.right > window.innerWidth - margin) {
+      shift = (window.innerWidth - margin) - rect.right;
+    }
+    if (shift !== 0) {
+      flyout.style.transform = 'translateX(calc(-50% + ' + shift + 'px))';
+    }
+  }
+
+  // :focus-within opens the flyout purely via CSS (keyboard Tab focus),
+  // independent of the hover/touch handling below — reposition for that
+  // path too, or a keyboard user on a narrow screen gets the same overflow.
+  trigger.addEventListener('focus', positionFlyout);
+
+  var canHover = window.matchMedia('(hover: hover)').matches;
+
+  if (canHover) {
+    var closeTimer;
+
+    function open() {
+      clearTimeout(closeTimer);
+      positionFlyout();
+      control.classList.add('is-open');
+    }
+
+    function scheduleClose() {
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(function () {
+        control.classList.remove('is-open');
+      }, 350);
+    }
+
+    control.addEventListener('mouseenter', open);
+    control.addEventListener('mouseleave', scheduleClose);
+
+    // On desktop the icon is a pure hover trigger, not a button — but
+    // clicking an <a> still focuses it, and :focus-within would then keep
+    // the flyout stuck open indefinitely (until something else takes
+    // focus), ignoring the hover grace period entirely. A real mouse click
+    // has event.detail > 0; a keyboard Enter/Space activation has
+    // detail === 0, so this only intercepts the mouse case and leaves
+    // keyboard activation (and its natural focus behavior) alone.
+    trigger.addEventListener('click', function (e) {
+      if (e.detail !== 0) {
+        e.preventDefault();
+        trigger.blur();
+      }
+    });
+
+    return;
+  }
+
+  // Tapping the trigger also focuses it, and :focus-within alone would
+  // then keep the flyout visible forever regardless of `.is-open` — so
+  // every close path here has to blur whatever's focused inside .mail-control,
+  // not just toggle the class.
+  function closeFlyout() {
+    control.classList.remove('is-open');
+    if (control.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
+  }
+
+  trigger.addEventListener('click', function (e) {
+    if (!control.classList.contains('is-open')) {
+      e.preventDefault();
+      positionFlyout();
+      control.classList.add('is-open');
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!control.contains(e.target)) {
+      closeFlyout();
+    }
+  });
+
+  // There's no "tap elsewhere to dismiss" equivalent for scrolling — left
+  // open, the flyout would otherwise ride along indefinitely as the page
+  // scrolls underneath the sticky header. Close it the moment scrolling
+  // starts instead of waiting for an explicit tap outside it.
+  //
+  // `scroll` alone visibly lags on iOS Safari: an active touch-scroll runs
+  // on the compositor, and it can defer a scroll handler's style changes
+  // until the gesture settles, so the flyout stays painted through the
+  // whole scroll even though the class was removed right away. `touchmove`
+  // fires the instant the finger starts moving, ahead of that deferral, so
+  // pairing both is what actually makes it disappear immediately rather
+  // than only once scrolling stops.
+  window.addEventListener('scroll', closeFlyout, { passive: true });
+  window.addEventListener('touchmove', closeFlyout, { passive: true });
 })();

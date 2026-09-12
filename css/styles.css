@@ -157,6 +157,39 @@ img, video { max-width: 100%; height: auto; }
 
 .theme-toggle { font-size: 1rem; }
 
+.mail-control { position: relative; }
+
+.mail-flyout {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 60;
+}
+
+.mail-control.is-open .mail-flyout,
+.mail-control:focus-within .mail-flyout {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mail-flyout-address {
+  color: var(--text);
+  text-decoration: underline;
+  font-size: 0.85rem;
+}
+
 /* ============================================================
    Layout
    ============================================================ */
@@ -237,16 +270,26 @@ p { max-width: 70ch; }
 }
 
 .show-more-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
   background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 6px;
-  padding: 0.6rem 1.2rem;
-  font-size: 0.95rem;
+  border: none;
+  color: var(--text-muted);
+  opacity: 0.75;
+  padding: 0.4rem;
+  font-size: 0.85rem;
   cursor: pointer;
 }
 
-.show-more-btn:hover { border-color: var(--accent); color: var(--accent); }
+.show-more-btn:hover { opacity: 1; color: var(--text); }
+
+.show-more-arrow { width: 16px; height: 16px; }
+
+.show-more-btn[aria-expanded="true"] { flex-direction: column-reverse; }
+
+.show-more-btn[aria-expanded="true"] .show-more-arrow { transform: rotate(180deg); }
 
 .project-meta {
   color: var(--text-muted);
@@ -434,7 +477,7 @@ p { max-width: 70ch; }
   .skip-link,
   .nav-links,
   .theme-toggle,
-  .copy-email-btn,
+  .mail-flyout,
   .hero-actions,
   .demo,
   .back-to-top,
