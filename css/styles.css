@@ -5,23 +5,23 @@
 :root,
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0d1117;
-  --surface: #161b22;
-  --text: #e6edf3;
+  --bg: #1c1712;
+  --surface: #26201a;
+  --text: #ece4d8;
   --text-muted: #8b949e;
-  --accent: #58a6ff;
-  --border: #30363d;
+  --accent: #d79a5c;
+  --border: #3d3226;
   --max-width: 900px;
 }
 
 [data-theme="light"] {
   color-scheme: light;
-  --bg: #ffffff;
-  --surface: #f6f8fa;
-  --text: #1f2328;
+  --bg: #fbf9f7;
+  --surface: #f2ece2;
+  --text: #554d37;
   --text-muted: #59636e;
-  --accent: #0969da;
-  --border: #d1d9e0;
+  --accent: #9a5b2c;
+  --border: #ddd0bd;
 }
 
 /* ============================================================
@@ -124,7 +124,7 @@ img, video { max-width: 100%; height: auto; }
 }
 
 .nav-links a.is-active {
-  color: var(--accent);
+  color: var(--text);
   text-decoration: underline;
   text-underline-offset: 0.3em;
 }

@@ -48,6 +48,24 @@ content must stay sanitized:
 - **Theming via CSS custom properties** on `[data-theme]` at `:root`. Both dark
   and light palettes must be updated together when adding a color. Every new
   color goes in the token block, never hardcoded in a rule.
+  - **The palette is earth/brown-toned, not the original blue-gray GitHub
+    look.** Light mode is a warm off-white background (`--bg: #fbf9f7`) with
+    a dark olive-brown foreground (`--text: #554d37`) — both owner-specified
+    exact hex values, not picked for contrast math after the fact (though
+    they do pass, ~5:1+). Dark mode's `--bg: #1c1712` / `--text: #ece4d8` are
+    a complementary dark-brown/warm-cream pair chosen to match, not
+    owner-specified. `--accent` in both themes is an earthy
+    terracotta/ochre (`#9a5b2c` light, `#d79a5c` dark — lighter in dark mode
+    since a dark terracotta wouldn't contrast enough against a dark bg) and
+    `--border`/`--surface` are warm tans/browns rather than the previous
+    cool grays, so borders and card backgrounds don't clash with the new
+    text/bg. **`--text-muted` is deliberately unchanged in both themes**
+    (`#59636e` light, `#8b949e` gray-blue dark) — the owner explicitly asked
+    to keep the muted/subtitle text as-is rather than push it toward brown
+    too. `.nav-links a.is-active` (the current-section nav link) uses
+    `color: var(--text)` with underline rather than `var(--accent)` — same
+    color as ordinary nav text, distinguished only by the underline, per
+    the owner's call; don't swap it back to the accent color.
 - **The inline theme script in `<head>` is load-bearing.** It runs before first
   paint to prevent a flash of the wrong theme. It must stay inline and stay
   blocking. Do not move it to `main.js` or add `defer`.
@@ -78,9 +96,14 @@ content must stay sanitized:
   white-on-transparent alone is invisible on light tab bars.
   `assets/img/favicon.ico` is multi-size (16/32/48) ICO, transparency kept;
   `assets/img/apple-touch-icon.png` is the same art flattened onto solid
-  `#0d1117` (the dark theme's `--bg`) at 180×180, since iOS renders alpha as
-  black. No `favicon.svg` link exists — don't re-add one without a real
-  vector file to back it. **Browsers cache favicons aggressively** outside
+  `#0d1117` at 180×180, since iOS renders alpha as black. That was the dark
+  theme's `--bg` at the time it was generated — the palette moved to earth
+  tones afterward (see Theming below) and `--bg` is now `#1c1712`, so the
+  baked-in flatten color is a close-but-no-longer-exact match. Harmless
+  (still a dark brown-black, not a visible seam) but not pixel-accurate;
+  regenerate the PNG against the current `--bg` if that ever matters. No
+  `favicon.svg` link exists — don't re-add one without a real vector file to
+  back it. **Browsers cache favicons aggressively** outside
   the normal HTTP cache — a hard-refresh won't show a changed one, closing
   and reopening the tab (or a private window) will.
 - **There is no Contact section.** Contact lives in the sticky header instead
