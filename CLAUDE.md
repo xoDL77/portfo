@@ -103,15 +103,17 @@ installed via Homebrew on this machine now (it wasn't before).
 
 ## State
 
-Done: repo, SSH auth, Pages deploy, responsive layout, theme toggle, skip link,
-focus styles, reduced-motion, Open Graph tags, résumé download button, print
-stylesheet, custom 404, hover-play video component, copy-email-to-clipboard
-button, scroll-spy nav, back-to-top button, Certifications card grid,
-Projects & Labs grid layout, lazy loading (the cert images are the first
-`<img>` tags in the site, so this Tier 2 item is now actually in effect —
-see `loading="lazy"` on `.cert-image`), favicon (`.ico`, multi-size),
-apple-touch-icon, and OG image. **No assets are 404ing anymore** — this was
-the last of them.
+Done: repo, SSH auth, Pages deploy, custom domain (cesarspace.online),
+responsive layout, theme toggle, skip link, focus styles, reduced-motion,
+Open Graph tags, résumé download button, print stylesheet, custom 404,
+hover-play video component, copy-email-to-clipboard button, scroll-spy nav,
+back-to-top button, favicon (`.ico`, multi-size), apple-touch-icon, and OG
+image. **No assets are 404ing anymore** — this was the last of them.
+
+**Content is filled in now** — About, Skills & Tooling, Projects & Labs (7
+cards), and Certifications (7 of 9) are all written. See the Content
+build-out roadmap step for what each turned out to be and what's still
+open.
 
 The OG image is a light-background "Cesar Vaca / PORTFOLIO" wordmark the
 owner supplied, not the dark-background name+title+clearance design
@@ -152,7 +154,9 @@ placeholders** — a static gray "Demo placeholder" frame held for 4 seconds,
 square (800×800), no audio. Swap for a real screen-capture per the Media
 section and step 4 below.
 
-Content is empty by design — the owner writes it.
+Content the owner still needs to supply: the missing 2 certifications, the
+UMGC degree cert image, and real screen-capture demo videos for the 7
+project cards (step 4 below).
 
 ## Roadmap
 
@@ -185,20 +189,28 @@ what they actually turned out to be vs. the original plan).
 Order matters — Projects first, because it's the hard one and everything else
 is quick by comparison.
 
-- **Projects & Labs.** The differentiator, and the one piece of this still
-  genuinely unbuilt. `.projects-grid` layout is done (responsive 2-col,
-  square hover-video, left-aligned text — see Conventions), with one
-  `<article class="project">` scaffolded for the agentic AI tool but its
-  description is still an empty comment. Write the description
-  (context → method → outcome, not a résumé bullet) and add more `<article>`
-  cards for: the Active Directory attack chain, WPA2/PMKID capture and
-  offline cracking, RFID/NFC badge cloning (HID Prox + MIFARE Classic per the
-  résumé), and the Burp Suite web/API testing work. Personal projects can
-  carry more detail than anything work-adjacent.
-- **Skills & Tooling.** Grouped lists — Recon, Exploitation, Wireless/RF,
-  Scripting & DevOps. Resist making this an unfiltered tool dump.
-- **About.** Two or three sentences. Air Force → Space Force → private sector
-  is a genuinely distinctive arc; lead with it.
+- ~~Projects & Labs~~ — done, 7 cards: Agentic AI Vulnerability Assessment
+  Tool, Active Directory Attack Chain, WPA2/PMKID Capture & Offline Cracking,
+  RFID/NFC Badge Cloning, Burp Suite Web/API Testing, Secure Self-Hosted
+  Minecraft Server, and the Uniform Random Apple Shortcuts Password
+  Generator (the last two are from the owner's CV, not the résumé — the
+  Minecraft one deliberately omits the real subdomain and the real AMP login
+  screenshot from the CV, describing the architecture without naming the
+  live hostname, per the owner's choice). The pentesting-technique projects
+  (AD chain, WPA2/PMKID, RFID/NFC, Burp Suite) are framed as home-lab work
+  with no employer/university attribution, per Operational security above,
+  even though the résumé listed them under mixed home-lab/employer/school
+  credit. Every card reuses the same generic placeholder hover-video —
+  replace per-card as real clips get recorded (step 4).
+- ~~Skills & Tooling~~ — done. Four groups (Recon & Enumeration,
+  Exploitation, Wireless & RF, Scripting & DevOps), curated from the tools
+  named in the résumé/CV rather than every tool either document mentions —
+  e.g. generic IT/soft skills (customer support, public speaking) and
+  résumé-only employer-context items were left out as poor fits for a
+  pentesting-focused portfolio.
+- ~~About~~ — done, leads with the Air Force → Space Force → private-sector
+  arc per the plan above. Phrasing/tone came from the owner's own draft plus
+  their cover letter and CV, not invented.
 - ~~Certifications~~ — done for the 7 certs with real images and Credly
   links (see State above). Still open: add back the UMGC degree card once
   that file's ready, and resolve the missing 2 certifications (9 mentioned,

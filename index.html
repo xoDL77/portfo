@@ -72,12 +72,57 @@
 
     <section id="about">
       <h2>About</h2>
-      <p><!-- 2–3 sentences: who you are, where you came from, what you're focused on --></p>
+      <p>Knowledge seeker, problem solver, and a satellite communications operator turned
+        penetration tester. Six years spanning the U.S. Air Force, U.S. Space Force, and
+        private-sector IT built the same habit everywhere: understand a system from the
+        inside before trusting it. That habit is now aimed at offensive security &mdash;
+        breaking things safely, in scope, so someone without permission doesn't get there
+        first.</p>
     </section>
 
     <section id="skills">
       <h2>Skills &amp; Tooling</h2>
-      <!-- Grouped lists: Recon, Exploitation, Wireless/RF, Scripting -->
+
+      <div class="skills-grid">
+        <div class="skill-group">
+          <h3>Recon &amp; Enumeration</h3>
+          <ul>
+            <li>Nmap &amp; NSE scripting</li>
+            <li>Wireshark</li>
+            <li>Nessus &amp; OpenVAS</li>
+            <li>enum4linux-ng (SMB / LDAP / Kerberos)</li>
+          </ul>
+        </div>
+        <div class="skill-group">
+          <h3>Exploitation</h3>
+          <ul>
+            <li>Impacket</li>
+            <li>kerbrute</li>
+            <li>Burp Suite</li>
+            <li>MFKey32</li>
+          </ul>
+        </div>
+        <div class="skill-group">
+          <h3>Wireless &amp; RF</h3>
+          <ul>
+            <li>Flipper Zero &amp; ESP32 Marauder</li>
+            <li>Aircrack-ng</li>
+            <li>WPA2 handshake / PMKID capture</li>
+            <li>HID Prox &amp; MIFARE Classic cloning</li>
+          </ul>
+        </div>
+        <div class="skill-group">
+          <h3>Scripting &amp; DevOps</h3>
+          <ul>
+            <li>Python &amp; the Claude Agent SDK</li>
+            <li>Bash &amp; PowerShell</li>
+            <li>Git</li>
+            <li>Linux (Kali, Ubuntu)</li>
+            <li>Cloudflare Tunnel &amp; Zero Trust</li>
+            <li>TLS/PKI, DNS, SPF/DKIM/DMARC</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <section id="projects">
@@ -101,7 +146,160 @@
 
           <h3>Agentic AI Vulnerability Assessment Tool</h3>
           <p class="project-meta">Python &middot; Claude Agent SDK &middot; Personal Project</p>
-          <p><!-- What it does, why you built it, what you learned --></p>
+          <p>Built an autonomous vulnerability-assessment agent that can be pointed at a
+            single host or an entire subnet and left to run a scoped security assessment
+            end to end, auto-generating a findings report when it's done. The agent enforces
+            a strict tool allow-list and validates every target against an authorized IP
+            scope before it's allowed to act, so it can't wander outside the boundaries it
+            was given &mdash; scan data and secrets are stored encrypted at rest. It runs as
+            a managed background service with start-on-boot and auto-restart-on-failure, and
+            has been iterated on and version-controlled across multiple releases. Building
+            the guardrails turned out to be the harder and more interesting problem than
+            building the automation itself.</p>
+        </article>
+
+        <article class="project">
+          <figure class="demo">
+            <video class="demo-video" muted loop playsinline preload="metadata"
+                   poster="assets/img/demo-poster.jpg" width="800" height="800">
+              <source src="assets/video/demo.webm" type="video/webm">
+              <source src="assets/video/demo.mp4" type="video/mp4">
+            </video>
+          </figure>
+
+          <h3>Active Directory Attack Chain</h3>
+          <p class="project-meta">kerbrute &middot; Impacket &middot; Active Directory &middot; Home Lab</p>
+          <p>A home-lab exercise in chaining together a full Active Directory attack path
+            instead of testing each technique in isolation. Started with unauthenticated
+            username enumeration via kerbrute's Kerberos pre-authentication timing, then used
+            Impacket to test the recovered accounts for AS-REP roasting &mdash; accounts with
+            Kerberos pre-authentication disabled that hand back a crackable ticket to anyone
+            who asks. From there, checked the domain's LDAP signing configuration and
+            confirmed it wasn't enforced, which is a precondition for an NTLM relay attack.
+            Walking one identity from anonymous enumeration to a relay-ready misconfiguration
+            made it obvious why each of these individually "minor" settings compounds into a
+            real path to compromise.</p>
+        </article>
+
+        <article class="project">
+          <figure class="demo">
+            <video class="demo-video" muted loop playsinline preload="metadata"
+                   poster="assets/img/demo-poster.jpg" width="800" height="800">
+              <source src="assets/video/demo.webm" type="video/webm">
+              <source src="assets/video/demo.mp4" type="video/mp4">
+            </video>
+          </figure>
+
+          <h3>WPA2/PMKID Capture &amp; Offline Cracking</h3>
+          <p class="project-meta">Flipper Zero &middot; ESP32 Marauder &middot; Aircrack-ng &middot; Home Lab</p>
+          <p>Wireless security testing against a personal lab network, aimed at going beyond
+            just capturing a handshake and actually recovering the key. Used a Flipper Zero
+            with an ESP32 Marauder board to profile nearby SSIDs, BSSIDs, channels, and
+            encryption types, then forced a connected client to reassociate with a
+            deauthentication frame to capture both the WPA2 4-way handshake and the PMKID to
+            a .pcap file. Ran the capture through Aircrack-ng against a wordlist offline, and
+            recovered the pre-shared key on a lab network deliberately configured with a weak
+            passphrase. It's a fast, concrete way to demonstrate why a dictionary-crackable
+            Wi-Fi password is a real vulnerability, not just a theoretical one.</p>
+        </article>
+
+        <article class="project">
+          <figure class="demo">
+            <video class="demo-video" muted loop playsinline preload="metadata"
+                   poster="assets/img/demo-poster.jpg" width="800" height="800">
+              <source src="assets/video/demo.webm" type="video/webm">
+              <source src="assets/video/demo.mp4" type="video/mp4">
+            </video>
+          </figure>
+
+          <h3>RFID/NFC Badge Cloning</h3>
+          <p class="project-meta">Flipper Zero &middot; HID Prox (T5577) &middot; MIFARE Classic &middot; MFKey32 &middot; Home Lab</p>
+          <p>Physical access control testing on two of the most common badge technologies
+            still in wide use: low-frequency HID Prox and MIFARE Classic. Cloned a HID Prox
+            credential onto a writable T5577 tag, then separately captured MIFARE Classic
+            authentication traffic and recovered the per-sector keys with MFKey32, a
+            nonce-based key-recovery technique. Combined both onto a single emulated fob
+            capable of presenting either credential, using only a handheld reader/writer and
+            no access to the original badge's backend system. The exercise is a reminder that
+            a lot of physical access control still relies on credential technologies that
+            were never designed to resist cloning.</p>
+        </article>
+
+        <article class="project">
+          <figure class="demo">
+            <video class="demo-video" muted loop playsinline preload="metadata"
+                   poster="assets/img/demo-poster.jpg" width="800" height="800">
+              <source src="assets/video/demo.webm" type="video/webm">
+              <source src="assets/video/demo.mp4" type="video/mp4">
+            </video>
+          </figure>
+
+          <h3>Burp Suite Web/API Testing</h3>
+          <p class="project-meta">Burp Suite &middot; Web/API Security &middot; Home Lab</p>
+          <p>Web application and API testing against intentionally vulnerable lab targets,
+            focused on server-side trust boundaries rather than surface-level input
+            validation. Used Burp Suite to intercept and modify requests, confirming a
+            server-side request forgery by redirecting a vulnerable parameter to an
+            attacker-controlled callback listener and watching the target make the outbound
+            request itself. Separately tested authorization at the object level &mdash; not
+            just the endpoint level &mdash; by diffing API responses between a low-privilege
+            account and an admin account for the same resource IDs, which surfaced a broken
+            object-level authorization issue letting one account reach another's data. Both
+            findings map directly to entries on the OWASP API Security Top 10, and reinforced
+            testing "can this identity reach this specific object," not just "can this
+            identity reach this endpoint."</p>
+        </article>
+
+        <article class="project">
+          <figure class="demo">
+            <video class="demo-video" muted loop playsinline preload="metadata"
+                   poster="assets/img/demo-poster.jpg" width="800" height="800">
+              <source src="assets/video/demo.webm" type="video/webm">
+              <source src="assets/video/demo.mp4" type="video/mp4">
+            </video>
+          </figure>
+
+          <h3>Secure Self-Hosted Minecraft Server</h3>
+          <p class="project-meta">Ubuntu &middot; AMP (CubeCoders) &middot; Cloudflare Zero Trust &middot; Nginx &middot; Personal Project</p>
+          <p>Wanted to run a Minecraft server for friends without paying for a hosted Realm,
+            without exposing a home IP address to the internet, and without handing out one
+            shared admin password. Self-hosted the server with CubeCoders AMP on a personally
+            managed Ubuntu box, put the web management panel behind an Nginx reverse proxy
+            with a real TLS certificate on a private subdomain, and tunneled both the web and
+            game traffic outbound so no public port ever has to be opened on the home
+            network. In front of the management panel sits a Zero Trust access gate &mdash;
+            Cloudflare Access &mdash; that only lets pre-approved email addresses in, and only
+            after a one-time passcode, before anyone reaches a login screen at all. Friends
+            get their own limited role (start/stop the server, manage the whitelist) through
+            the app's built-in access controls, while full admin stays with one account
+            &mdash; the same layered-access pattern used to protect much higher-value
+            internal tools.</p>
+        </article>
+
+        <article class="project">
+          <figure class="demo">
+            <video class="demo-video" muted loop playsinline preload="metadata"
+                   poster="assets/img/demo-poster.jpg" width="800" height="800">
+              <source src="assets/video/demo.webm" type="video/webm">
+              <source src="assets/video/demo.mp4" type="video/mp4">
+            </video>
+          </figure>
+
+          <h3>Uniform Random Apple Shortcuts Password Generator</h3>
+          <p class="project-meta">Apple Shortcuts &middot; iOS/macOS &middot; Personal Project</p>
+          <p>Apple's built-in password generator looked random at a glance, but it always
+            produces the same fixed shape &mdash; a set length, exactly one digit, one
+            uppercase letter, two hyphens, and lowercase everywhere else. That fixed
+            structure quietly shrinks the real keyspace: Apple advertises around 71 bits of
+            entropy, but a known, unchanging format gives an attacker a big head start over
+            truly random guessing. Built a password generator in Apple Shortcuts that instead
+            samples every character independently from a 75-character pool of letters,
+            digits, and symbols, with no positional pattern at all, plus input guardrails
+            that explain in plain terms why short passwords are a bad idea before letting you
+            generate one. A 17-character password from this generator works out to roughly
+            106 bits of entropy &mdash; about 7.5&times;10<sup>31</sup> possibilities &mdash;
+            versus the fixed-format original, using nothing but Apple's own visual scripting
+            tool.</p>
         </article>
       </div>
     </section>
