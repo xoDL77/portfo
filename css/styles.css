@@ -269,6 +269,7 @@ p { max-width: 70ch; }
   -webkit-line-clamp: 3;
   line-clamp: 3;
   overflow: hidden;
+  margin-bottom: 0.35rem;
 }
 
 .project-desc.is-expanded {
@@ -279,10 +280,19 @@ p { max-width: 70ch; }
 }
 
 .project-desc-toggle {
-  align-items: flex-start;
-  margin-top: 0.25rem;
-  padding: 0.2rem 0;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  opacity: 0.75;
+  cursor: pointer;
 }
+
+.project-desc-toggle:hover { opacity: 1; color: var(--text); }
 
 .show-more-wrap {
   text-align: center;
