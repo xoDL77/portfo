@@ -52,21 +52,26 @@
       </ul>
 
       <div class="nav-controls">
-        <a class="icon-btn" href="mailto:cvportfolio.gray652@passmail.net" aria-label="Email Cesar Vaca">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-            <path d="m3 6.5 9 6.5 9-6.5"></path>
-          </svg>
-        </a>
-        <button id="copy-email" class="icon-btn copy-email-btn" type="button" aria-label="Copy email address">
-          <svg class="icon icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <rect x="9" y="9" width="12" height="12" rx="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-          </svg>
-          <svg class="icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-        </button>
+        <div class="mail-control">
+          <a class="icon-btn" id="mail-trigger" href="mailto:cvportfolio.gray652@passmail.net" aria-label="Email Cesar Vaca">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="m3 6.5 9 6.5 9-6.5"></path>
+            </svg>
+          </a>
+          <div class="mail-flyout">
+            <a class="mail-flyout-address" href="mailto:cvportfolio.gray652@passmail.net">cvportfolio.gray652@passmail.net</a>
+            <button id="copy-email" class="icon-btn copy-email-btn" type="button" aria-label="Copy email address">
+              <svg class="icon icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <rect x="9" y="9" width="12" height="12" rx="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <svg class="icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
         <a class="icon-btn" href="https://www.linkedin.com/in/cesar-vaca" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <rect x="2" y="2" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2"></rect>
@@ -327,7 +332,12 @@
       </div>
 
       <div class="show-more-wrap">
-        <button id="projects-toggle" class="show-more-btn" type="button" aria-expanded="false">Show more projects</button>
+        <button id="projects-toggle" class="show-more-btn" type="button" aria-expanded="false" aria-label="Show more projects">
+          <span class="show-more-label">more</span>
+          <svg class="show-more-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
       </div>
     </section>
 
@@ -379,7 +389,12 @@
       </div>
 
       <div class="show-more-wrap">
-        <button id="certs-toggle" class="show-more-btn" type="button" aria-expanded="false">Show more certifications</button>
+        <button id="certs-toggle" class="show-more-btn" type="button" aria-expanded="false" aria-label="Show more certifications">
+          <span class="show-more-label">more</span>
+          <svg class="show-more-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
       </div>
     </section>
 

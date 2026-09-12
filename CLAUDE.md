@@ -82,25 +82,130 @@ content must stay sanitized:
   the normal HTTP cache — a hard-refresh won't show a changed one, closing
   and reopening the tab (or a private window) will.
 - **There is no Contact section.** Contact lives in the sticky header instead
-  (`.nav-controls`, inside `.nav`): a `mailto:` icon link, the copy-email
-  button, and a LinkedIn icon link, so it's visible on every scroll position
-  without the visitor hunting for it. All three share the `.icon-btn` base
-  class (2rem square, border, radius) with theme-toggle now also using it for
-  consistent sizing. The LinkedIn icon is a hand-drawn-free `<svg>` — a
-  rounded-square outline plus an `<text>` "in" glyph, not a copied brand
-  asset. `#copy-email-status` (the `aria-live` region for the copy
-  confirmation) lives directly under `</header>`, outside the header itself,
-  so it isn't affected by the print stylesheet hiding most of the header (see
-  Gotchas).
+  (`.nav-controls`, inside `.nav`): a mail icon, a LinkedIn icon link, and
+  the theme toggle, so it's visible on every scroll position without the
+  visitor hunting for it. All three share the `.icon-btn` base class (2rem
+  square, border, radius). The LinkedIn icon is a hand-drawn-free `<svg>` —
+  a rounded-square outline plus an `<text>` "in" glyph, not a copied brand
+  asset.
+  - **The mail icon is a hover flyout, not a bare mailto link.** `.mail-control`
+    wraps the icon (`#mail-trigger`) and a `.mail-flyout` panel (the real
+    email address as a link, plus the copy-email button) that's
+    `opacity:0; pointer-events:none` until `.mail-control` gets an `.is-open`
+    class or `:focus-within` fires.
+  - **Opening/closing on hover is JS-driven with a close delay, not plain
+    CSS `:hover`.** A first version used `.mail-control:hover .mail-flyout`
+    directly and it was unusable — the flyout sits below the icon with a
+    visual gap, and raw `:hover` drops the instant the cursor leaves the
+    icon's box, killing the flyout mid-transit before the mouse could ever
+    reach it (no way to click the copy button). Fixed with
+    `mouseenter`/`mouseleave` listeners on `.mail-control` that add/remove
+    `.is-open`, where `mouseleave` doesn't close immediately but schedules a
+    ~350ms `setTimeout`, cleared if `mouseenter` fires again first (moving
+    into the flyout) — a grace period standing in for exact mouse-path
+    geometry, rather than trying to compute a pixel-perfect hover bridge.
+    Don't revert this to a pure CSS `:hover` rule; the gap-crossing bug will
+    come right back. On devices without hover (gated by
+    `@media (hover: hover)` in JS), this whole path is skipped in favor of a
+    tap-to-toggle: first tap on `#mail-trigger` opens the flyout instead of
+    navigating, a second tap on the now-visible address actually opens mail.
+    It closes on a tap outside `.mail-control`, or the moment scrolling
+    starts — without that second one it would otherwise ride along
+    indefinitely as the visitor scrolls, since there's no equivalent of
+    "tap elsewhere to dismiss" for scrolling. **That close is wired to both
+    `scroll` and `touchmove`, not `scroll` alone** — a `scroll`-only
+    listener visibly lags on iOS Safari, because an active touch-scroll
+    runs on the compositor and can defer a scroll handler's style changes
+    until the gesture settles, so the flyout stays painted through the
+    whole scroll and only actually disappears once it stops (looks like it
+    "lingers while scrolling," which is exactly the bug this was written to
+    fix). `touchmove` fires the instant the finger starts moving, ahead of
+    that deferral, so pairing both is what makes it disappear immediately
+    rather than only once scrolling settles; this couldn't be verified in
+    headless Chromium (the iOS-specific compositor/paint timing doesn't
+    reproduce there) — only that the event wiring itself closes it
+    correctly. **Every touch-path close goes through a shared
+    `closeFlyout()`, not a bare `classList.remove('is-open')`** — tapping
+    the trigger also focuses it, so `:focus-within` alone keeps the flyout
+    visible forever no matter what `.is-open` says, unless whatever's
+    focused inside `.mail-control` is explicitly blurred too. `closeFlyout()`
+    does both (remove the class, blur `document.activeElement` if it's
+    inside the control); a fix that only removes the class will look like
+    it's failing to close at all. `#copy-email-status` (the `aria-live`
+    region for the copy confirmation) lives directly under `</header>`,
+    outside the header itself.
+    **The flyout address link is intentionally not accent-colored** —
+    `color: var(--text)` with `text-decoration: underline`, so it reads as a
+    link via the underline without matching the site's blue link color;
+    that was a deliberate choice, not an oversight, so don't "fix" it back
+    to `var(--accent)`.
+  - **A real mouse click on `#mail-trigger` is deliberately neutered on
+    hover-capable devices** — `e.preventDefault()` + `trigger.blur()`, so it
+    doesn't navigate and doesn't leave the flyout stuck open. Without this,
+    clicking the `<a>` (easy to do by accident, reaching for the icon)
+    focuses it, and `:focus-within` then holds the flyout open indefinitely
+    — ignoring the hover grace-period timer entirely — until focus happens
+    to land somewhere else. On desktop this icon is meant to be a pure
+    hover trigger, not a clickable control; the real actions (opening mail,
+    copying the address) live inside the flyout itself. This only
+    intercepts genuine pointer clicks — it checks `event.detail !== 0`
+    (a keyboard-triggered Enter/Space "click" reports `detail === 0`), so
+    Tab-then-Enter activation for keyboard users still navigates normally
+    and still opens the flyout via `:focus-within`, same as plain Tab-focus
+    does. Don't drop the `event.detail` check trying to "simplify" this —
+    that's what keeps keyboard access working.
+  - **The flyout's horizontal position is clamped by JS, not fixed by CSS.**
+    Base CSS centers it under the icon (`left: 50%` + `translateX(-50%)`),
+    but the icon sits near the *left* edge of the header on narrow layouts
+    (it's the leftmost control) and near the *right* edge on desktop (nav
+    space-between pushes `.nav-controls` to the far right) — centered, it
+    overflows off one side or the other depending on viewport width, and a
+    static anchor (`left: 0` or `right: 0`) only trades which side breaks.
+    `positionFlyout()` in `js/main.js` measures the flyout's actual
+    `getBoundingClientRect()` each time it's about to open and adds an
+    extra `translateX` nudge (min 8px margin from either viewport edge) on
+    top of the CSS centering — called from the hover `open()`, the touch
+    tap-open, and a `focus` listener on `#mail-trigger` (so keyboard-only
+    Tab navigation, which opens the flyout via pure `:focus-within` with no
+    JS involved otherwise, still gets positioned correctly).
+  - **Copy closes the flyout ~200ms before the checkmark morph reverts**,
+    on a separate `closeFlyoutTimer` (1000ms) from the `resetTimer` (1200ms)
+    that flips the icon back to the clipboard shape, both in the "Copy
+    email to clipboard" IIFE. They used to fire together at 1200ms, which
+    looked wrong: the flyout's own opacity fade (~0.15s) and the icon's
+    checkmark→clipboard revert started at the same instant, so the plain
+    clipboard icon became visible again while still faintly visible through
+    the fade — a flash of the "wrong" icon right as it closed. Starting the
+    flyout's close first (1000ms) means it's fully faded by the time the
+    icon reverts (1200ms), hiding that transition entirely. Don't reunify
+    these two timers back into one `setTimeout` — that's exactly the bug
+    this fixes. The full confirmation animation is still always visible
+    before it starts closing, even if the mouse never leaves the button.
+    Moving the mouse away earlier still closes it sooner via the normal
+    hover-out grace-period timer (see above) — that's independent and fine,
+    this only governs the case where the visitor stays put.
+  - `.mail-flyout` is hidden outright in print (`display: none`) rather than
+    left to `opacity: 0`, since a print stylesheet has no hover state and an
+    invisible-but-present flyout would otherwise print as blank space or
+    confuse `.nav-controls a[href]::after`'s auto-appended-URL rule by
+    matching both the trigger link and the flyout's address link. Only the
+    trigger prints, with its `mailto:` appended.
 - **Projects and Certifications each show only their first 4 cards**; the
   rest carry a plain `hidden` attribute in the markup. A `setupExpandable()`
-  helper in `js/main.js` (one call per grid) wires a "Show N more …" /
-  "Show fewer …" toggle button (`#projects-toggle`, `#certs-toggle`) that
-  flips the `hidden` attribute on the extra cards — no navigation, same
-  page. The count and singular/plural wording are computed from how many
-  cards actually carry `hidden`, so adding an 8th project or a 9th cert
-  later doesn't require touching the button's text or count by hand — just
-  add `hidden` to the new card if it should start collapsed.
+  helper in `js/main.js` (one call per grid) wires a toggle button
+  (`#projects-toggle`, `#certs-toggle`) that flips the `hidden` attribute on
+  the extra cards — no navigation, same page. The button is intentionally
+  minimal: a muted, non-bold `.show-more-label` ("more"/"less") plus a
+  `.show-more-arrow` chevron, arrow **below** the label pointing down when
+  collapsed, flipped to **above** the label and rotated 180° (pointing up)
+  when expanded via `flex-direction: column-reverse` on
+  `[aria-expanded="true"]` — no visible button border/background, just muted
+  text that brightens on hover. The full "Show more/fewer projects" phrasing
+  still exists as the button's `aria-label` for screen readers even though
+  the visible text is just "more"/"less". Adding an 8th project or 9th cert
+  later needs nothing here — just add `hidden` to the new card if it should
+  start collapsed; the toggle logic reads the DOM, it doesn't hardcode a
+  count.
 
 ## Media
 
