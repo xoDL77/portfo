@@ -24,7 +24,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cesarspace.online/">
   <meta property="og:title" content="Cesar Vaca — Cybersecurity &amp; Penetration Testing">
-  <meta property="og:description" content="Penetration testing, red teaming, and security automation. TS/SCI cleared.">
+  <meta property="og:description" content="Penetration testing, red teaming, and security automation.">
   <meta property="og:image" content="https://cesarspace.online/assets/img/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -49,21 +49,44 @@
         <li><a href="#skills">Skills</a></li>
         <li><a href="#projects">Projects</a></li>
         <li><a href="#certs">Certifications</a></li>
-        <li><a href="#contact">Contact</a></li>
       </ul>
 
-      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch color theme">
-        <span aria-hidden="true">&#9680;</span>
-      </button>
+      <div class="nav-controls">
+        <a class="icon-btn" href="mailto:cvportfolio.gray652@passmail.net" aria-label="Email Cesar Vaca">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="m3 6.5 9 6.5 9-6.5"></path>
+          </svg>
+        </a>
+        <button id="copy-email" class="icon-btn copy-email-btn" type="button" aria-label="Copy email address">
+          <svg class="icon icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <rect x="9" y="9" width="12" height="12" rx="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </button>
+        <a class="icon-btn" href="https://www.linkedin.com/in/cesar-vaca" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <rect x="2" y="2" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2"></rect>
+            <text x="12" y="16.5" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">in</text>
+          </svg>
+        </a>
+        <button id="theme-toggle" class="icon-btn theme-toggle" type="button" aria-label="Switch color theme">
+          <span aria-hidden="true">&#9680;</span>
+        </button>
+      </div>
     </nav>
   </header>
+
+  <p id="copy-email-status" class="visually-hidden" aria-live="polite"></p>
 
   <main id="main">
 
     <section class="hero" id="top">
       <h1>Cesar Vaca</h1>
       <p class="tagline">Penetration Testing &middot; Red Teaming &middot; Security Automation</p>
-      <p class="clearance">TS/SCI Security Clearance</p>
 
       <p class="hero-actions">
         <a class="btn" href="assets/Cesar-Vaca-Resume.pdf" download>Download resume (PDF)</a>
@@ -225,7 +248,7 @@
             were never designed to resist cloning.</p>
         </article>
 
-        <article class="project">
+        <article class="project" hidden>
           <figure class="demo">
             <video class="demo-video" muted loop playsinline preload="metadata"
                    poster="assets/img/demo-poster.jpg" width="800" height="800">
@@ -250,7 +273,7 @@
             identity reach this endpoint."</p>
         </article>
 
-        <article class="project">
+        <article class="project" hidden>
           <figure class="demo">
             <video class="demo-video" muted loop playsinline preload="metadata"
                    poster="assets/img/demo-poster.jpg" width="800" height="800">
@@ -276,7 +299,7 @@
             internal tools.</p>
         </article>
 
-        <article class="project">
+        <article class="project" hidden>
           <figure class="demo">
             <video class="demo-video" muted loop playsinline preload="metadata"
                    poster="assets/img/demo-poster.jpg" width="800" height="800">
@@ -301,6 +324,10 @@
             versus the fixed-format original, using nothing but Apple's own visual scripting
             tool.</p>
         </article>
+      </div>
+
+      <div class="show-more-wrap">
+        <button id="projects-toggle" class="show-more-btn" type="button" aria-expanded="false">Show more projects</button>
       </div>
     </section>
 
@@ -334,40 +361,26 @@
           <h3 class="cert-title">CompTIA Network+</h3>
           <p class="cert-verify">Verify with <a href="https://www.credly.com/badges/9aef0cdb-99f6-4562-ba2a-3d0114cf7c8e/public_url" target="_blank" rel="noopener noreferrer">Credly</a></p>
         </article>
-        <article class="cert-card">
+        <article class="cert-card" hidden>
           <img class="cert-image" src="assets/certs/linux-essentials.jpg" alt="Linux Essentials certificate" width="1400" height="1082" loading="lazy">
           <h3 class="cert-title">Linux Essentials</h3>
           <p class="cert-verify">Verify with <a href="https://www.credly.com/badges/c2b9890b-b2dd-4b77-a0ef-93bc54e045b1/public_url" target="_blank" rel="noopener noreferrer">Credly</a></p>
         </article>
-        <article class="cert-card">
+        <article class="cert-card" hidden>
           <img class="cert-image" src="assets/certs/cloud-plus.jpg" alt="CompTIA Cloud+ certificate" width="1400" height="1082" loading="lazy">
           <h3 class="cert-title">CompTIA Cloud+</h3>
           <p class="cert-verify">Verify with <a href="https://www.credly.com/badges/69339a74-4fec-4239-bc6e-648e1ce88b1d/public_url" target="_blank" rel="noopener noreferrer">Credly</a></p>
         </article>
-        <article class="cert-card">
+        <article class="cert-card" hidden>
           <img class="cert-image" src="assets/certs/aws-ccp.jpg" alt="AWS Certified Cloud Practitioner certificate" width="1400" height="1082" loading="lazy">
           <h3 class="cert-title">AWS Certified Cloud Practitioner</h3>
           <p class="cert-verify">Verify with <a href="https://www.credly.com/badges/6afecd0d-25e5-4164-bf71-714467b96241/public_url" target="_blank" rel="noopener noreferrer">Credly</a></p>
         </article>
       </div>
-    </section>
 
-    <section id="contact">
-      <h2>Contact</h2>
-      <p>
-        <a href="mailto:cvportfolio.gray652@passmail.net">cvportfolio.gray652@passmail.net</a>
-        <button id="copy-email" class="copy-email-btn" type="button" aria-label="Copy email address">
-          <svg class="icon icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <rect x="9" y="9" width="12" height="12" rx="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-          </svg>
-          <svg class="icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-        </button>
-      </p>
-      <p id="copy-email-status" class="visually-hidden" aria-live="polite"></p>
-      <p><a href="https://www.linkedin.com/in/cesar-vaca" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+      <div class="show-more-wrap">
+        <button id="certs-toggle" class="show-more-btn" type="button" aria-expanded="false">Show more certifications</button>
+      </div>
     </section>
 
     <div id="scroll-sentinel" class="scroll-sentinel" aria-hidden="true"></div>
