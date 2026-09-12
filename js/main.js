@@ -70,27 +70,26 @@
   if (!btn) return;
 
   var email = 'cvportfolio.gray652@passmail.net';
-  var defaultLabel = btn.textContent;
   var resetTimer;
 
-  function setLabel(label, statusText) {
-    btn.textContent = label;
+  function showCopied(statusText) {
+    btn.classList.add('is-copied');
     if (status) status.textContent = statusText;
     clearTimeout(resetTimer);
     resetTimer = setTimeout(function () {
-      btn.textContent = defaultLabel;
-    }, 2000);
+      btn.classList.remove('is-copied');
+    }, 1200);
   }
 
   btn.addEventListener('click', function () {
     try {
       navigator.clipboard.writeText(email).then(function () {
-        setLabel('Copied!', 'Email address copied to clipboard.');
+        showCopied('Email address copied to clipboard.');
       }, function () {
-        setLabel('Copy failed', 'Could not copy automatically — email is above.');
+        if (status) status.textContent = 'Could not copy automatically — email is above.';
       });
     } catch (e) {
-      setLabel('Copy failed', 'Could not copy automatically — email is above.');
+      if (status) status.textContent = 'Could not copy automatically — email is above.';
     }
   });
 })();

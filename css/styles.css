@@ -192,16 +192,50 @@ p { max-width: 70ch; }
 }
 
 .copy-email-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  vertical-align: middle;
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: 6px;
-  padding: 0.15rem 0.5rem;
-  font-size: 0.85rem;
+  padding: 0;
   cursor: pointer;
 }
 
 .copy-email-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.copy-email-btn .icon {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.copy-email-btn .icon-copy {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.copy-email-btn .icon-check {
+  opacity: 0;
+  transform: scale(0.5);
+  color: var(--accent);
+}
+
+.copy-email-btn.is-copied .icon-copy {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.copy-email-btn.is-copied .icon-check {
+  opacity: 1;
+  transform: scale(1);
+}
 
 /* ============================================================
    Back to top
