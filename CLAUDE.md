@@ -198,22 +198,53 @@ content must stay sanitized:
     link does — `#mail-trigger` carries the address in a `data-email`
     attribute instead, and a matching `#mail-trigger::after` print rule
     appends it the same way. Keep both in sync if the address ever changes.
-- **Projects and Certifications each show only their first 4 cards**; the
-  rest carry a plain `hidden` attribute in the markup. A `setupExpandable()`
-  helper in `js/main.js` (one call per grid) wires a toggle button
-  (`#projects-toggle`, `#certs-toggle`) that flips the `hidden` attribute on
-  the extra cards — no navigation, same page. The button is intentionally
-  minimal: a muted, non-bold `.show-more-label` ("more"/"less") plus a
-  `.show-more-arrow` chevron, arrow **below** the label pointing down when
-  collapsed, flipped to **above** the label and rotated 180° (pointing up)
-  when expanded via `flex-direction: column-reverse` on
-  `[aria-expanded="true"]` — no visible button border/background, just muted
-  text that brightens on hover. The full "Show more/fewer projects" phrasing
-  still exists as the button's `aria-label` for screen readers even though
-  the visible text is just "more"/"less". Adding an 8th project or 9th cert
-  later needs nothing here — just add `hidden` to the new card if it should
-  start collapsed; the toggle logic reads the DOM, it doesn't hardcode a
-  count.
+- **Projects and Certifications each show only their first N cards** — N is
+  **2 below the 768px breakpoint, 4 at and above it**, not a fixed number.
+  Cards aren't pre-marked `hidden` in the markup for this anymore (a static
+  attribute can't encode "hidden on mobile, visible on desktop"); a
+  `setupExpandable()` helper in `js/main.js` (one call per grid) computes
+  the cutoff from `window.matchMedia('(min-width: 768px)')` and sets
+  `.hidden` on cards by index every time it renders — on load, on toggle
+  click, and again on a `matchMedia` `change` listener so resizing across
+  the breakpoint while still collapsed resyncs which cards are showing
+  (crossing it while already expanded does nothing, since everything's
+  already visible). The toggle button (`#projects-toggle`, `#certs-toggle`)
+  flips an `expanded` flag and re-renders — no navigation, same page. The
+  button is intentionally minimal: a muted, non-bold `.show-more-label`
+  ("more"/"less") plus a `.show-more-arrow` chevron, arrow **below** the
+  label pointing down when collapsed, flipped to **above** the label and
+  rotated 180° (pointing up) when expanded via `flex-direction:
+  column-reverse` on `[aria-expanded="true"]` — no visible button
+  border/background, just muted text that brightens on hover. The full
+  "Show more/fewer projects" phrasing still exists as the button's
+  `aria-label` for screen readers even though the visible text is just
+  "more"/"less". Adding an 8th project or 9th cert later needs nothing here
+  — the toggle logic reads the DOM and counts by index, it doesn't hardcode
+  which specific cards start hidden.
+
+- **Each project's description (`.project-desc`) is clamped to 3 lines**
+  with an ellipsis, via `-webkit-line-clamp: 3` (`display: -webkit-box;
+  -webkit-box-orient: vertical; overflow: hidden;`), independent of and in
+  addition to the card-level show/hide above — this clamp applies to every
+  visible project card's body text at any screen width, not just mobile.
+  A sibling `.project-desc-toggle` button (same `.show-more-btn` look as
+  the grid-level toggle, just left-aligned instead of centered since it
+  sits inline under paragraph text) expands/collapses just that paragraph.
+  A "Project description clamp" IIFE in `js/main.js` pairs each
+  `.project-desc` with the `.project-desc-toggle` immediately after it via
+  `nextElementSibling` — the two must stay adjacent siblings in the markup,
+  or the pairing breaks silently (the `if (!toggle || …) return` guard
+  skips it rather than erroring). Whether the button shows at all is
+  decided by measurement, not guesswork: `scrollHeight > clientHeight` on
+  the clamped paragraph is only true when the clamp actually cut something
+  off, so a short description that fits in 3 lines never gets a toggle.
+  That measurement reruns on a debounced `resize` listener too, since the
+  1-col mobile layout and 2-col desktop layout give the same text different
+  column widths, which changes how many lines it needs — a description that
+  overflows at one width may not at the other. Print forces
+  `.project-desc` back to `display: block; -webkit-line-clamp: unset;
+  overflow: visible;` and hides `.project-desc-toggle` entirely, same
+  reasoning as the grid-level show-more being pointless on paper.
 
 ## Media
 

@@ -188,8 +188,11 @@
 
 /* ============================================================
    Show more (Projects / Certifications)
-   Cards beyond the first N ship with the `hidden` attribute; this
-   reveals them in place instead of navigating anywhere.
+   Cards beyond the first N are hidden; this reveals them in place
+   instead of navigating anywhere. N itself depends on viewport width
+   (2 on mobile, 4 at the 768px desktop breakpoint) rather than being
+   baked into the markup, since a card that should show by default on
+   desktop should still start hidden on a narrow phone screen.
    ============================================================ */
 
 (function () {
@@ -199,30 +202,110 @@
     if (!grid || !btn) return;
 
     var label = btn.querySelector('.show-more-label');
+    var items = Array.prototype.slice.call(grid.querySelectorAll(itemSelector));
+    var desktopQuery = window.matchMedia('(min-width: 768px)');
+    var expanded = false;
 
-    var extraItems = Array.prototype.filter.call(
-      grid.querySelectorAll(itemSelector),
-      function (el) { return el.hasAttribute('hidden'); }
-    );
+    function collapsedCount() {
+      return desktopQuery.matches ? 4 : 2;
+    }
 
-    if (!extraItems.length) {
-      btn.hidden = true;
-      return;
+    function render() {
+      var count = collapsedCount();
+      var hasExtra = items.length > count;
+
+      items.forEach(function (el, i) {
+        el.hidden = !expanded && i >= count;
+      });
+
+      btn.hidden = !hasExtra;
+      if (!hasExtra) return;
+
+      btn.setAttribute('aria-expanded', String(expanded));
+      btn.setAttribute('aria-label', expanded ? lessLabel : moreLabel);
+      if (label) label.textContent = expanded ? 'less' : 'more';
     }
 
     btn.addEventListener('click', function () {
-      var expanded = btn.getAttribute('aria-expanded') === 'true';
-      extraItems.forEach(function (el) {
-        el.hidden = expanded;
-      });
-      btn.setAttribute('aria-expanded', String(!expanded));
-      btn.setAttribute('aria-label', expanded ? moreLabel : lessLabel);
-      if (label) label.textContent = expanded ? 'more' : 'less';
+      expanded = !expanded;
+      render();
     });
+
+    // Crossing the 768px breakpoint while still collapsed changes how many
+    // cards should be showing (2 vs 4) — resync in that case. Once
+    // expanded, every card is already visible, so there's nothing to do.
+    desktopQuery.addEventListener('change', function () {
+      if (!expanded) render();
+    });
+
+    render();
   }
 
   setupExpandable('.projects-grid', '.project', 'projects-toggle', 'Show more projects', 'Show fewer projects');
   setupExpandable('.certs-grid', '.cert-card', 'certs-toggle', 'Show more certifications', 'Show fewer certifications');
+})();
+
+
+/* ============================================================
+   Project description clamp
+   Each .project-desc is clamped to 3 lines via CSS; this measures
+   whether that clamp actually cut anything off (scrollHeight exceeds
+   clientHeight only when content overflows the clamped box) and, if
+   so, wires the sibling .project-desc-toggle button to expand/collapse
+   it. Short descriptions that never overflow get no button at all.
+   ============================================================ */
+
+(function () {
+  var pairs = [];
+
+  Array.prototype.forEach.call(document.querySelectorAll('.project-desc'), function (p) {
+    var toggle = p.nextElementSibling;
+    if (!toggle || !toggle.classList.contains('project-desc-toggle')) return;
+    pairs.push({ p: p, toggle: toggle, expanded: false });
+  });
+
+  if (!pairs.length) return;
+
+  function measure(pair) {
+    if (pair.expanded) return;
+    var overflowing = pair.p.scrollHeight - pair.p.clientHeight > 1;
+    pair.toggle.hidden = !overflowing;
+  }
+
+  function measureAll() {
+    pairs.forEach(measure);
+  }
+
+  pairs.forEach(function (pair) {
+    var label = pair.toggle.querySelector('.show-more-label');
+
+    pair.toggle.addEventListener('click', function () {
+      pair.expanded = !pair.expanded;
+      pair.p.classList.toggle('is-expanded', pair.expanded);
+      pair.toggle.setAttribute('aria-expanded', String(pair.expanded));
+      pair.toggle.setAttribute(
+        'aria-label',
+        pair.expanded ? 'Show less of this project description' : 'Read more of this project description'
+      );
+      if (label) label.textContent = pair.expanded ? 'less' : 'more';
+
+      // Re-measure the ones still collapsed — a card's height changing
+      // doesn't reflow any other card's text width, but this stays cheap
+      // enough (a handful of cards) that it's not worth special-casing.
+      if (!pair.expanded) measureAll();
+    });
+  });
+
+  measureAll();
+
+  // Card width (and therefore how many lines the full text needs) changes
+  // between the 1-col mobile and 2-col desktop layouts, so a resize can
+  // flip whether a given description actually overflows 3 lines.
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(measureAll, 150);
+  });
 })();
 
 

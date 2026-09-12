@@ -263,6 +263,27 @@ p { max-width: 70ch; }
 
 .project { text-align: left; }
 
+.project-desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+.project-desc.is-expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
+}
+
+.project-desc-toggle {
+  align-items: flex-start;
+  margin-top: 0.25rem;
+  padding: 0.2rem 0;
+}
+
 .show-more-wrap {
   text-align: center;
   margin-top: 1.5rem;
@@ -480,7 +501,8 @@ p { max-width: 70ch; }
   .hero-actions,
   .demo,
   .back-to-top,
-  .show-more-wrap {
+  .show-more-wrap,
+  .project-desc-toggle {
     display: none !important;
   }
 
@@ -489,10 +511,18 @@ p { max-width: 70ch; }
   .site-header { position: static; }
 
   /* "Show more" is a JS interaction with nothing to click on paper —
-     print every project/cert card, not just the first 4. */
+     print every project/cert card, not just the first 4, and print each
+     description in full rather than clamped to 3 lines. */
   .project[hidden],
   .cert-card[hidden] {
     display: block !important;
+  }
+
+  .project-desc {
+    display: block;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    overflow: visible;
   }
 
   body {
