@@ -33,10 +33,8 @@ content must stay sanitized:
 - Home-lab and coursework framing only. No employer specifics, client names,
   real hostnames, internal IPs, or engagement details.
 - Screenshots and video must be scrubbed before publishing.
-- Contact uses a dedicated address on the owner's own domain
-  (`contact@cesarspace.online`), not the personal one on the PDF résumé.
-  Phone number is deliberately absent. It's shown as plain text, not a
-  `mailto:` link — see Conventions below.
+- Contact uses an alias address (`cvportfolio.gray652@passmail.net`), not the
+  personal one on the PDF résumé. Phone number is deliberately absent.
 - If asked to add technical depth to a writeup, favor methodology and reasoning
   over reproducible operational detail.
 
@@ -90,16 +88,11 @@ content must stay sanitized:
   square, border, radius). The LinkedIn icon is a hand-drawn-free `<svg>` —
   a rounded-square outline plus an `<text>` "in" glyph, not a copied brand
   asset.
-  - **The mail icon is a hover flyout, and there is no mailto: link
-    anywhere.** `.mail-control` wraps the icon (`#mail-trigger`, a plain
-    `<button>`, not a link) and a `.mail-flyout` panel (the email address as
-    plain `<span>` text, plus the copy-email button) that's
+  - **The mail icon is a hover flyout, not a bare mailto link.** `.mail-control`
+    wraps the icon (`#mail-trigger`) and a `.mail-flyout` panel (the real
+    email address as a link, plus the copy-email button) that's
     `opacity:0; pointer-events:none` until `.mail-control` gets an `.is-open`
-    class or `:focus-within` fires. This was a deliberate choice — the
-    owner didn't want a clickable mail-client launcher, just a way to see
-    and copy the address — so don't turn the trigger back into an `<a
-    href="mailto:...">` or the flyout address back into a link without
-    being asked.
+    class or `:focus-within` fires.
   - **Opening/closing on hover is JS-driven with a close delay, not plain
     CSS `:hover`.** A first version used `.mail-control:hover .mail-flyout`
     directly and it was unusable — the flyout sits below the icon with a
@@ -114,65 +107,53 @@ content must stay sanitized:
     Don't revert this to a pure CSS `:hover` rule; the gap-crossing bug will
     come right back. On devices without hover (gated by
     `@media (hover: hover)` in JS), this whole path is skipped in favor of a
-    tap-to-toggle: tapping `#mail-trigger` toggles `.is-open` directly (it's
-    a plain button now, nothing to prevent-default on), closing on a tap
-    outside `.mail-control` too.
-  - **`closeFlyout()` (remove `.is-open` from `.mail-control`, then blur
-    `document.activeElement` if it's inside the control) is defined once at
-    the top of the IIFE and used everywhere something closes the flyout —
-    never a bare `classList.remove('is-open')`.** Tapping/clicking the
-    trigger also focuses it, so `:focus-within` alone keeps the flyout
-    visible forever no matter what `.is-open` says, unless whatever's
-    focused inside `.mail-control` is explicitly blurred too; a fix that
-    only removes the class will look like it's failing to close at all.
-  - **Closing on `scroll`/`touchmove` is wired unconditionally, before the
-    `hover: hover` branch, not only inside the touch (non-hover) path.**
-    `hover: hover` is a real signal but not a perfectly reliable one on
-    hybrid touch+mouse hardware; a device that matches it but is actually
-    being scrolled by touch would otherwise have no close path for that
-    gesture at all, since the hover branch only listens for
-    `mouseenter`/`mouseleave`. This was tightened after a report that the
-    flyout was "lingering while scrolling on mobile" a second time, right
-    after switching the trigger from `<a>` to `<button>` for the plain-text
-    email change — the exact mechanism was never conclusively pinned down
-    (both a `scroll`-only listener and the earlier `<a>`→`<button>` swap
-    were plausible contributors, but neither was reproducible in headless
-    Chromium), so the fix was made structurally more robust rather than
-    chasing a specific root cause. **`scroll` alone also visibly lags on
-    iOS Safari on its own**, independent of the above: an active
-    touch-scroll runs on the compositor, and it can defer a scroll
-    handler's style changes until the gesture settles, so the flyout stays
-    painted through the whole scroll and only actually disappears once it
-    stops. `touchmove` fires the instant the finger starts moving, ahead of
+    tap-to-toggle: first tap on `#mail-trigger` opens the flyout instead of
+    navigating, a second tap on the now-visible address actually opens mail.
+    It closes on a tap outside `.mail-control`, or the moment scrolling
+    starts — without that second one it would otherwise ride along
+    indefinitely as the visitor scrolls, since there's no equivalent of
+    "tap elsewhere to dismiss" for scrolling. **That close is wired to both
+    `scroll` and `touchmove`, not `scroll` alone** — a `scroll`-only
+    listener visibly lags on iOS Safari, because an active touch-scroll
+    runs on the compositor and can defer a scroll handler's style changes
+    until the gesture settles, so the flyout stays painted through the
+    whole scroll and only actually disappears once it stops (looks like it
+    "lingers while scrolling," which is exactly the bug this was written to
+    fix). `touchmove` fires the instant the finger starts moving, ahead of
     that deferral, so pairing both is what makes it disappear immediately
-    rather than only once scrolling settles. None of this could be verified
-    in headless Chromium (the iOS-specific compositor/paint timing doesn't
+    rather than only once scrolling settles; this couldn't be verified in
+    headless Chromium (the iOS-specific compositor/paint timing doesn't
     reproduce there) — only that the event wiring itself closes it
-    correctly. If a "lingers while scrolling" report comes back a third
-    time, the next step is getting a real device in the loop (or at least
-    exact repro steps — OS, browser, whether it's a real touch-scroll or a
-    trackpad/resized-window "mobile" test) rather than iterating blind
-    again. `#copy-email-status` (the `aria-live` region for the copy
-    confirmation) lives directly under `</header>`, outside the header
-    itself.
-    `.mail-flyout-address` is plain `color: var(--text)`, no underline, no
-    accent color — it isn't a link and shouldn't be styled to look like
-    one.
+    correctly. **Every touch-path close goes through a shared
+    `closeFlyout()`, not a bare `classList.remove('is-open')`** — tapping
+    the trigger also focuses it, so `:focus-within` alone keeps the flyout
+    visible forever no matter what `.is-open` says, unless whatever's
+    focused inside `.mail-control` is explicitly blurred too. `closeFlyout()`
+    does both (remove the class, blur `document.activeElement` if it's
+    inside the control); a fix that only removes the class will look like
+    it's failing to close at all. `#copy-email-status` (the `aria-live`
+    region for the copy confirmation) lives directly under `</header>`,
+    outside the header itself.
+    **The flyout address link is intentionally not accent-colored** —
+    `color: var(--text)` with `text-decoration: underline`, so it reads as a
+    link via the underline without matching the site's blue link color;
+    that was a deliberate choice, not an oversight, so don't "fix" it back
+    to `var(--accent)`.
   - **A real mouse click on `#mail-trigger` is deliberately neutered on
-    hover-capable devices** — `trigger.blur()` on click, so it doesn't
-    leave the flyout stuck open. Even though the trigger is a plain
-    `<button>` with nothing to navigate to, clicking it (easy to do by
-    accident, reaching for the icon) still focuses it, and `:focus-within`
-    then holds the flyout open indefinitely — ignoring the hover
-    grace-period timer entirely — until focus happens to land somewhere
-    else. On desktop this icon is meant to be a pure hover trigger, not a
-    clickable control; the real actions (copying the address) live inside
-    the flyout itself. This only blurs on genuine pointer clicks — it
-    checks `event.detail !== 0` (a keyboard-triggered Enter/Space "click"
-    reports `detail === 0`), so Tab-then-Enter activation for keyboard
-    users still opens the flyout via `:focus-within` and stays open, same
-    as plain Tab-focus does. Don't drop the `event.detail` check trying to
-    "simplify" this — that's what keeps keyboard access working.
+    hover-capable devices** — `e.preventDefault()` + `trigger.blur()`, so it
+    doesn't navigate and doesn't leave the flyout stuck open. Without this,
+    clicking the `<a>` (easy to do by accident, reaching for the icon)
+    focuses it, and `:focus-within` then holds the flyout open indefinitely
+    — ignoring the hover grace-period timer entirely — until focus happens
+    to land somewhere else. On desktop this icon is meant to be a pure
+    hover trigger, not a clickable control; the real actions (opening mail,
+    copying the address) live inside the flyout itself. This only
+    intercepts genuine pointer clicks — it checks `event.detail !== 0`
+    (a keyboard-triggered Enter/Space "click" reports `detail === 0`), so
+    Tab-then-Enter activation for keyboard users still navigates normally
+    and still opens the flyout via `:focus-within`, same as plain Tab-focus
+    does. Don't drop the `event.detail` check trying to "simplify" this —
+    that's what keeps keyboard access working.
   - **The flyout's horizontal position is clamped by JS, not fixed by CSS.**
     Base CSS centers it under the icon (`left: 50%` + `translateX(-50%)`),
     but the icon sits near the *left* edge of the header on narrow layouts
@@ -203,15 +184,12 @@ content must stay sanitized:
     Moving the mouse away earlier still closes it sooner via the normal
     hover-out grace-period timer (see above) — that's independent and fine,
     this only governs the case where the visitor stays put.
-  - **Print forces `.mail-flyout` into normal static, visible flow**
-    (`position: static; opacity: 1 !important; display: inline !important`),
-    rather than leaving it as the usual absolutely-positioned,
-    opacity-0-until-hovered overlay. A print stylesheet has no hover state,
-    and — now that the email is plain text with no `mailto:` href for the
-    old `.nav-controls a[href]::after` auto-append rule to latch onto —
-    this is the only way the address appears on a printed page at all;
-    `.copy-email-btn` is still hidden in print separately, since copying
-    means nothing on paper.
+  - `.mail-flyout` is hidden outright in print (`display: none`) rather than
+    left to `opacity: 0`, since a print stylesheet has no hover state and an
+    invisible-but-present flyout would otherwise print as blank space or
+    confuse `.nav-controls a[href]::after`'s auto-appended-URL rule by
+    matching both the trigger link and the flyout's address link. Only the
+    trigger prints, with its `mailto:` appended.
 - **Projects and Certifications each show only their first 4 cards**; the
   rest carry a plain `hidden` attribute in the markup. A `setupExpandable()`
   helper in `js/main.js` (one call per grid) wires a toggle button
