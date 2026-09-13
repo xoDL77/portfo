@@ -424,7 +424,7 @@ credential's file ready yet. Re-add it the same way: a `cert-card` with an
 image, `<h3>`, and no `.cert-verify` (degrees don't have Credly badges).
 
 The "Verify with Credly" links are **real** — extracted from the hyperlink
-annotations in `assets/Cesar-Vaca-Resume.pdf` (the visible cert names in that
+annotations in `assets/Cesar Vaca Resume.pdf` (the visible cert names in that
 PDF are underlined/linked text; `strings` on the PDF surfaces the actual
 `credly.com/badges/...` URIs), matched to the 7 certs sent.
 
