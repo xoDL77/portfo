@@ -422,11 +422,38 @@ expect).
 PDF certificates (sourced from
 `~/Library/CloudStorage/ProtonDrive-cesar@cvmail.me-folder/career/certs/`,
 also mirrored under iCloud `~/Library/Mobile Documents/.../work/certs/`), and
-each was rasterized with PyMuPDF at 1400px-long-edge, ~85 quality JPEG
-(78–162KB each — cheap enough to not bother lazy-generating srcset variants).
+each was rasterized with PyMuPDF at 1400px-long-edge, ~85 quality JPEG.
 All 7 source PDFs are US Letter landscape (792×612pt, or equivalent), so the
 JPEGs are ~1.294:1 — very close to but not exactly the `.cert-image`
 CSS's 4:3 box; `object-fit: cover` absorbs the difference invisibly.
+
+**Every cert JPEG has since been redacted and watermarked in place**
+(129–219KB each now — bigger than the original 78–162KB range, since the
+tiled watermark adds fine-grained texture that costs more JPEG bytes than
+flat certificate backgrounds do). Per the owner's security concern about
+publishing a persistent personal identifier on a public page, every unique
+ID-like number on every cert image is painted over with a solid box and
+replaced with bold "REDACTED" text — not just CompTIA's literal "Candidate
+ID" field (same on all 4 CompTIA certs: pentest-plus, security-plus,
+network-plus, cloud-plus) but also each CompTIA cert's separate "Code:"
+verification code near the bottom, ISC2's "Certification Number" on the
+SSCP cert, AWS's "Validation Number" on the AWS cert, and the LPI
+verification code embedded in the visible URL on the Linux Essentials cert.
+The redaction box color matches each cert's local background (white for
+the light-background certs, the same dark navy as the card body on the AWS
+one) so it reads as part of the original design, not a crude patch. A
+tiled, rotated, semi-transparent "cesarspace.online" watermark (dark text
+on light certs, light text on the dark AWS one) is layered across every
+image afterward. **This has no committed source/generator script** (same
+pattern as the original PDF→JPEG rasterization and the OG image — a one-off
+Pillow script run ad hoc, not saved in the repo) — the redaction box
+coordinates were hand-measured per image via pixel-column/row projection
+scans and are specific to each cert's exact layout, so they are **not
+reusable** if any of these 7 images is ever regenerated from its source PDF
+again; redoing that would require re-locating and re-measuring the ID
+field(s) on the new image before redacting. None of the "Verify with
+Credly" links elsewhere on the page were touched — those still work as an
+independent, un-redacted verification path.
 
 The **UMGC degree card is removed for now** — the owner doesn't have that
 credential's file ready yet. Re-add it the same way: a `cert-card` with an
