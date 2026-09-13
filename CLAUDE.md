@@ -73,13 +73,22 @@ content must stay sanitized:
     since a dark terracotta wouldn't contrast enough against a dark bg) and
     `--border`/`--surface` are warm tans/browns rather than the previous
     cool grays, so borders and card backgrounds don't clash with the new
-    text/bg. **`--text-muted` is deliberately unchanged in both themes**
-    (`#59636e` light, `#8b949e` gray-blue dark) — the owner explicitly asked
-    to keep the muted/subtitle text as-is rather than push it toward brown
-    too. `.nav-links a.is-active` (the current-section nav link) uses
-    `color: var(--text)` with underline rather than `var(--accent)` — same
-    color as ordinary nav text, distinguished only by the underline, per
-    the owner's call; don't swap it back to the accent color.
+    text/bg. **`--text-muted` was initially left as the old cool gray-blue**
+    (`#59636e` light, `#8b949e` dark) when the rest of the palette went
+    earth-toned, per the owner's own call at the time — but that was
+    revisited once they saw it rendered: it's now a warm muted
+    brown/taupe in both themes (`#7d6f56` light, `#a89880` dark) so the
+    subtitle/secondary text (`.tagline`, `.project-meta`, `.cert-verify`,
+    etc. — anything using this token) matches the rest of the brown palette
+    instead of standing out as leftover gray. Both new values were checked
+    against their `--bg` for ~4.5:1+ contrast, same bar as the primary
+    palette. **All `.nav-links a` (not just `.is-active`) use
+    `color: var(--text)`** — every section link in the header is the same
+    color as ordinary body text, all the time; the *only* visual difference
+    for the current section while scrolling is `.nav-links a.is-active`
+    adding `text-decoration: underline` (no color change). Don't reintroduce
+    `var(--accent)` on these links — that was the look before this change
+    and the owner explicitly moved away from it.
 - **The inline theme script in `<head>` is load-bearing.** It runs before first
   paint to prevent a flash of the wrong theme. It must stay inline and stay
   blocking. Do not move it to `main.js` or add `defer`.
@@ -149,11 +158,18 @@ content must stay sanitized:
   indent is the point, not a bug. Below 768px `<main>` and `.nav` already
   share the same 1rem padding, so no offset is needed or applied there. A
   heading's own `border-bottom` (see the Certifications/Skills styling)
-  moves with it and gets 1rem wider on the left to match, which is
-  intentional — the underline is treated as part of the heading, not the
-  body content. If `<main>`'s or `.nav`'s horizontal padding changes at this
-  breakpoint, this `-1rem` needs to change to match the new difference
-  between them.
+  moves with it — intentional, the underline is treated as part of the
+  heading, not the body content. **`h2` also gets `margin-right: -1rem`**
+  (`h1` doesn't need it, having no border-bottom) — `margin-left: -1rem`
+  alone only relocates the box's left edge; CSS's auto-width solving keeps
+  the right edge anchored exactly where it was (at `<main>`'s narrower
+  content edge), so without the matching negative margin-right the
+  underline fell 1rem short of the header's right edge (the theme-toggle's
+  right edge) instead of reaching it — both edges need an equal and
+  opposite push to make the box 2rem wider rather than just shifted. If
+  `<main>`'s or `.nav`'s horizontal padding changes at this breakpoint,
+  both the `-1rem` margin-left and this margin-right need to change to
+  match the new difference between them.
 - **There is no Contact section.** Contact lives in the sticky header instead
   (`.nav-controls`, inside `.nav`): a mail icon, a LinkedIn icon link, and
   the theme toggle, so it's visible on every scroll position without the
@@ -286,8 +302,15 @@ content must stay sanitized:
   down when collapsed, flipped to **above** the label and rotated 180°
   (pointing up) when expanded via `flex-direction: column-reverse` on
   `[aria-expanded="true"]` — no visible button border/background, just
-  muted text that brightens on hover. The visible label names what there's
-  more of ("more projects"/"less projects", "more certs"/"less certs") via
+  `color: var(--text-muted)` text (no added `opacity` dimming — an earlier
+  version layered `opacity: 0.75` on top of the already-muted color, making
+  it visibly lighter than other `--text-muted` text like `.tagline`
+  elsewhere on the page; removed so this text is exactly the same rendered
+  color, not just the same token) that brightens to `var(--text)` on hover.
+  `.project-desc-toggle` ("read more"/"read less") follows the same
+  color/no-opacity rule for the same reason. The visible label names what
+  there's more of ("more projects"/"less projects", "more certs"/"less
+  certs") via
   a `noun` argument passed into `setupExpandable()`, rather than a bare
   "more"/"less" that leaves the reader guessing — the fuller
   "Show more/fewer projects" phrasing still exists separately as the
