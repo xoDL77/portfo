@@ -224,6 +224,8 @@ h2 {
 
 p { max-width: 70ch; }
 
+main section p { text-align: justify; }
+
 .tagline { color: var(--text-muted); margin: 0.25rem 0; }
 
 .hero-actions { margin-top: 1.5rem; }

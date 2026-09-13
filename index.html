@@ -103,7 +103,7 @@
       <h2>About</h2>
       <p>Knowledge seeker and tenacious problem solver&hellip; ambitious IT professional
         leveraging six years of applied knowledge in cybersecurity, networking,
-        administrative operations, and troubleshooting gained through college education,
+        automation, and troubleshooting gained through college education,
         civilian enterprise, and dedicated service in the U.S. military.</p>
     </section>
 
@@ -203,7 +203,7 @@
           <p class="project-desc">An authorized enterprise pentest where I chained together a full Active
             Directory attack path. Started with unauthenticated username enumeration via
             kerbrute's Kerberos pre-authentication timing, then used Impacket to test the
-            recovered accounts for AS-REP roasting &mdash; accounts with Kerberos
+            recovered accounts for AS-REP roasting, targeting accounts with Kerberos
             pre-authentication disabled that hand back a crackable ticket to anyone who asks.
             From there, checked the domain's LDAP signing configuration and confirmed it
             wasn't enforced, which is a precondition for an NTLM relay attack. Walking one
@@ -253,7 +253,7 @@
           <h3>RFID/NFC Badge Cloning</h3>
           <p class="project-meta">Flipper Zero &middot; HID Prox (T5577) &middot; MIFARE Classic &middot; MFKey32</p>
           <p class="project-desc">Physical access control testing on two of the most common badge technologies
-            still in wide use: 125kHz fob auth and MIFARE Classic. Reverse engineered the
+            still in wide use, 125kHz fob auth and MIFARE Classic. Reverse engineered the
             ciphertext and cloned a HID Prox credential onto a writable T5577 tag, then
             separately captured MIFARE Classic authentication traffic and recovered the
             per-sector keys with MFKey32. Combined both onto a single emulated fob capable of
@@ -336,8 +336,8 @@
             solution was building a password generator in Apple Shortcuts that randomly
             selects from a 75-character pool of letters, digits, and symbols, with no
             positional pattern at all. A 17-character password generated from my shortcut
-            works out to roughly 106 bits of entropy &mdash; about 7.5&times;10<sup>31</sup>
-            possibilities &mdash; using nothing but Apple's own visual scripting tool in the
+            works out to roughly 106 bits of entropy, about 7.5&times;10<sup>31</sup>
+            possibilities, using nothing but Apple's own visual scripting tool in the
             Shortcuts app.</p>
           <button class="project-desc-toggle" type="button" aria-expanded="false" aria-label="Read more of this project description">
             <span class="show-more-label">read more</span>
