@@ -377,10 +377,19 @@ hover-play video component, copy-email-to-clipboard button, scroll-spy nav,
 back-to-top button, favicon (`.ico`, multi-size), apple-touch-icon, and OG
 image. **No assets are 404ing anymore** — this was the last of them.
 
-**Content is filled in now** — About, Skills & Tooling, Projects & Labs (7
-cards), and Certifications (7 of 9) are all written. See the Content
-build-out roadmap step for what each turned out to be and what's still
-open.
+**Content is filled in now** — About, Skills (section heading is just
+"Skills", not "Skills & Tooling" — shortened per the owner's call), Projects
+(same: "Projects", not "Projects & Labs") (7 cards), and Certifications (7
+of 9) are all written. See the Content build-out roadmap step for what each
+turned out to be and what's still open.
+
+**Project cards no longer tag themselves "Home Lab" / "Personal Project" in
+`.project-meta`** — that subtitle line is tools/tech used only now (e.g.
+"kerbrute · Impacket · Active Directory"), per the owner's call that the
+project-type label was redundant/unwanted. This is purely about what's
+*visible* on the card — it does not by itself change the Operational
+security framing below (no employer/client attribution in the prose); see
+that section for what's still sanitized.
 
 **"TS/SCI Security Clearance" no longer appears anywhere on the page** —
 removed from the hero (was a `<p class="clearance">` under the tagline,
@@ -479,20 +488,31 @@ what they actually turned out to be vs. the original plan).
 Order matters — Projects first, because it's the hard one and everything else
 is quick by comparison.
 
-- ~~Projects & Labs~~ — done, 7 cards: Agentic AI Vulnerability Assessment
-  Tool, Active Directory Attack Chain, WPA2/PMKID Capture & Offline Cracking,
-  RFID/NFC Badge Cloning, Burp Suite Web/API Testing, Secure Self-Hosted
-  Minecraft Server, and the Uniform Random Apple Shortcuts Password
-  Generator (the last two are from the owner's CV, not the résumé — the
-  Minecraft one deliberately omits the real subdomain and the real AMP login
-  screenshot from the CV, describing the architecture without naming the
-  live hostname, per the owner's choice). The pentesting-technique projects
-  (AD chain, WPA2/PMKID, RFID/NFC, Burp Suite) are framed as home-lab work
-  with no employer/university attribution, per Operational security above,
-  even though the résumé listed them under mixed home-lab/employer/school
-  credit. Every card reuses the same generic placeholder hover-video —
-  replace per-card as real clips get recorded (step 4).
-- ~~Skills & Tooling~~ — done. Four groups (Recon & Enumeration,
+- ~~Projects~~ — done, 7 cards (section heading is "Projects", not "Projects
+  & Labs"): Agentic AI Vulnerability Assessment Tool, Active Directory
+  Attack Chain, WPA2/PMKID Capture & Offline Cracking, RFID/NFC Badge
+  Cloning, Burp Suite Web/API Testing, Secure Self-Hosted Minecraft Server,
+  and the Uniform Random Apple Shortcuts Password Generator (the last two
+  are from the owner's CV, not the résumé — the Minecraft one deliberately
+  omits the real subdomain and the real AMP login screenshot from the CV,
+  describing the architecture without naming the live hostname, per the
+  owner's choice). The pentesting-technique projects (WPA2/PMKID, RFID/NFC,
+  Burp Suite) are framed as home-lab work with no employer/university
+  attribution, per Operational security above, even though the résumé
+  listed them under mixed home-lab/employer/school credit. **The Active
+  Directory Attack Chain card is a deliberate exception to that** — its copy
+  says "an authorized enterprise pentest," real-engagement framing rather
+  than home-lab framing. This was flagged to the owner explicitly (since it
+  reads as a departure from their own Operational security policy above) and
+  confirmed as intentional, not an oversight — they're comfortable naming
+  this one as a real authorized engagement. Don't "fix" it back to home-lab
+  wording without asking first. Every card reuses the same generic placeholder hover-video — replace
+  per-card as real clips get recorded (step 4). `.project-meta` (the
+  small subtitle line under each title) is tools/tech only now, e.g.
+  "kerbrute · Impacket · Active Directory" — no "Home Lab"/"Personal
+  Project" tag, per the owner's call; see State above.
+- ~~Skills~~ — done (section heading is "Skills", not "Skills & Tooling").
+  Four groups (Recon & Enumeration,
   Exploitation, Wireless & RF, Scripting & DevOps), curated from the tools
   named in the résumé/CV rather than every tool either document mentions —
   e.g. generic IT/soft skills (customer support, public speaking) and
