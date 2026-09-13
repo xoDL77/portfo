@@ -391,11 +391,23 @@ purely a content/marketing decision, unrelated to the Operational security
 section above (which is about sanitizing project *detail*, not about
 whether the clearance is mentioned at all).
 
-The OG image is a light-background "Cesar Vaca / PORTFOLIO" wordmark the
-owner supplied, not the dark-background name+title+clearance design
-originally sketched in the roadmap below — that plan is superseded, this is
-the real design now. It was resized/padded (not cropped) from 1000×612 to
-exactly 1200×630 with matching white padding on the sides.
+The OG image is a "Cesar Vaca / PORTFOLIO" wordmark — same layout the owner
+originally supplied as a PNG (name in large bold serif, "PORTFOLIO" in
+letter-spaced small caps flanked by two horizontal rules) — not the
+dark-background name+title+clearance design originally sketched in the
+roadmap below — that plan is superseded, this is the real design now. It's
+since been **regenerated in-code** (`Pillow`, not the owner's original file)
+to track the site's actual palette and typeface instead of drifting from
+them: background/text are the light-theme tokens (`--bg: #fbf9f7`,
+`--text: #554d37`), and the type is Georgia Bold / Georgia — the same
+system-serif family the site's `body` uses (see Conventions) — rather than
+whatever font was baked into the owner's original PNG. There's no build
+step or committed generator script for this (same as the cert JPEGs — a
+one-off Pillow script run ad hoc, not saved in the repo), so regenerating it
+after another palette/font change means re-running that kind of script
+again rather than hand-editing pixels. Still exactly 1200×630, RGB PNG, no
+transparency (matches what Facebook/LinkedIn/iMessage preview cards
+expect).
 
 **Cert images are real now**, not placeholders — the owner sent the actual
 PDF certificates (sourced from
