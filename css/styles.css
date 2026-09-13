@@ -488,6 +488,14 @@ p { max-width: 70ch; }
 
   h1 { font-size: 3rem; }
 
+  /* main's horizontal padding (2rem) is wider than .nav's (1rem) at this
+     breakpoint, so the hero name and section titles would otherwise sit
+     1rem to the right of the header's left edge. Pull them back left by
+     the difference so they line up with "Cesar Vaca" in the header, while
+     the body content (tagline, paragraphs, grids) keeps main's normal
+     padding and reads as indented relative to its own heading. */
+  h1, h2 { margin-left: -1rem; }
+
   .skills-grid,
   .projects-grid,
   .certs-grid {

@@ -138,6 +138,22 @@ content must stay sanitized:
   from its edges is also 1rem, via its `padding: 1rem`). If `.nav`'s padding
   ever changes, `.header-rule span`'s margin needs to change to match, or
   the line drifts out of alignment with the brand/controls above it.
+- **`h1` and `h2` are pulled 1rem left of where `<main>`'s padding would
+  otherwise put them, at the 768px breakpoint only** (`margin-left: -1rem`
+  in the "Tablet and up" media block) — `<main>` has 2rem of horizontal
+  padding there versus `.nav`'s 1rem, so without this the hero name and
+  every section title would sit 1rem right of "Cesar Vaca" in the header
+  instead of flush with it, which is the look the owner asked for. Only the
+  headings shift; body content (tagline, paragraphs, grids) keeps `<main>`'s
+  normal padding, so it reads as indented relative to its own heading — that
+  indent is the point, not a bug. Below 768px `<main>` and `.nav` already
+  share the same 1rem padding, so no offset is needed or applied there. A
+  heading's own `border-bottom` (see the Certifications/Skills styling)
+  moves with it and gets 1rem wider on the left to match, which is
+  intentional — the underline is treated as part of the heading, not the
+  body content. If `<main>`'s or `.nav`'s horizontal padding changes at this
+  breakpoint, this `-1rem` needs to change to match the new difference
+  between them.
 - **There is no Contact section.** Contact lives in the sticky header instead
   (`.nav-controls`, inside `.nav`): a mail icon, a LinkedIn icon link, and
   the theme toggle, so it's visible on every scroll position without the
