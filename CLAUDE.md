@@ -331,6 +331,19 @@ content must stay sanitized:
   square, border, radius). The LinkedIn icon is a hand-drawn-free `<svg>` —
   a rounded-square outline plus an `<text>` "in" glyph, not a copied brand
   asset.
+  - **`.icon-btn:hover` is wrapped in `@media (hover: hover)`.** Without
+    that guard, tapping any icon button on a touch device (the theme
+    toggle was the one the owner actually noticed) left it visibly
+    "stuck" in its hover color (accent border/icon) until the next
+    scroll — touch browsers apply `:hover` styles on tap and only clear
+    them on the next scroll/repaint, since there's no real pointer to
+    un-hover with. Gating on `(hover: hover)` means only devices with an
+    actual pointer (mouse/trackpad) ever get that highlight; a tap now
+    just performs the button's action (theme swap, flyout open, etc.)
+    with no lingering highlight, closer to a normal "button press" flash.
+    The mail flyout's own persistence is unaffected and still intentional
+    — that comes from `:focus-within` on `.mail-control`, a separate
+    mechanism from this hover rule.
   - **The mail icon is a hover flyout, and there is no `mailto:` link
     anywhere on the page.** `#mail-trigger` is a plain `<button>`, not an
     `<a>` — it opens/closes `.mail-flyout` and does nothing else. The
