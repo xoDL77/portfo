@@ -267,6 +267,11 @@ main section p { text-align: justify; }
   margin-bottom: 0.3rem;
 }
 
+.skill-toggle:not([hidden]) {
+  display: block;
+  margin-top: 0.2rem;
+}
+
 .projects-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -291,7 +296,11 @@ main section p { text-align: justify; }
   overflow: visible;
 }
 
-.project-desc-toggle {
+/* :not([hidden]) guard: an unconditional `display` here would win over the
+   browser's default `[hidden] { display: none }` UA rule (author styles
+   beat UA styles at equal specificity), so toggle.hidden = true in JS would
+   silently fail to actually hide the button. */
+.project-desc-toggle:not([hidden]) {
   display: inline-block;
   margin: 0;
   padding: 0;
@@ -547,12 +556,16 @@ main section p { text-align: justify; }
      instead of hiding the whole thing like before. */
   .site-header { position: static; }
 
-  /* "Show more" is a JS interaction with nothing to click on paper —
-     print every project/cert card, not just the first 4, and print each
-     description in full rather than clamped to 3 lines. */
+  /* "Show more"/"read more" are JS interactions with nothing to click on
+     paper — print every project/cert card and skill, not just the first
+     N, and print each description in full rather than clamped to 3 lines. */
   .project[hidden],
   .cert-card[hidden] {
     display: block !important;
+  }
+
+  .skill-group li[hidden] {
+    display: list-item !important;
   }
 
   .project-desc {
