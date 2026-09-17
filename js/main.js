@@ -196,7 +196,10 @@
    ============================================================ */
 
 (function () {
-  function setupExpandable(gridSelector, itemSelector, buttonId, moreLabel, lessLabel, noun) {
+  // mobileCount/desktopCount are 2 rows' worth of cards at each grid's
+  // column count (projects/skills: 1 col mobile, 2 desktop; certs: 2 col
+  // mobile, 3 desktop), not a fixed number shared by every grid.
+  function setupExpandable(gridSelector, itemSelector, buttonId, moreLabel, lessLabel, noun, mobileCount, desktopCount) {
     var grid = document.querySelector(gridSelector);
     var btn = document.getElementById(buttonId);
     if (!grid || !btn) return;
@@ -207,7 +210,7 @@
     var expanded = false;
 
     function collapsedCount() {
-      return desktopQuery.matches ? 4 : 2;
+      return desktopQuery.matches ? desktopCount : mobileCount;
     }
 
     function render() {
@@ -232,8 +235,8 @@
     });
 
     // Crossing the 768px breakpoint while still collapsed changes how many
-    // cards should be showing (2 vs 4) — resync in that case. Once
-    // expanded, every card is already visible, so there's nothing to do.
+    // cards should be showing — resync in that case. Once expanded, every
+    // card is already visible, so there's nothing to do.
     desktopQuery.addEventListener('change', function () {
       if (!expanded) render();
     });
@@ -241,8 +244,8 @@
     render();
   }
 
-  setupExpandable('.projects-grid', '.project', 'projects-toggle', 'Show more projects', 'Show fewer projects', 'projects');
-  setupExpandable('.certs-grid', '.cert-card', 'certs-toggle', 'Show more certifications', 'Show fewer certifications', 'certs');
+  setupExpandable('.projects-grid', '.project', 'projects-toggle', 'Show more projects', 'Show fewer projects', 'projects', 2, 4);
+  setupExpandable('.certs-grid', '.cert-card', 'certs-toggle', 'Show more certifications', 'Show fewer certifications', 'certs', 4, 6);
 })();
 
 
@@ -370,6 +373,17 @@
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(measureAll, 150);
+  });
+
+  // A card hidden behind the "Show more projects" toggle has no layout box
+  // (scrollHeight/clientHeight both read 0), so measuring it while hidden
+  // always concludes "not overflowing" and hides its read-more button for
+  // good. Re-measure whenever a card's hidden attribute changes, whether
+  // that's the show-more toggle revealing it or a resize crossing the
+  // breakpoint while it was already showing.
+  var hiddenObserver = new MutationObserver(measureAll);
+  Array.prototype.forEach.call(document.querySelectorAll('.project'), function (card) {
+    hiddenObserver.observe(card, { attributes: true, attributeFilter: ['hidden'] });
   });
 })();
 
