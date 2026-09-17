@@ -484,6 +484,16 @@ main section p { text-align: justify; }
   padding: 4rem 1rem;
 }
 
+/* text-align: center only centers each paragraph's inline content, not the
+   paragraph's own box -- the global `p { max-width: 70ch }` narrows these
+   boxes below .notfound's width at desktop sizes, and with the default
+   margin-left/right: 0 they then sit flush against .notfound's left edge
+   instead of centered, dragging their (centered) text left with them. */
+.notfound p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* ============================================================
    Tablet and up
    ============================================================ */
@@ -507,8 +517,10 @@ main section p { text-align: justify; }
      as indented relative to its own heading, but the hero's tagline and
      resume button are pulled flush too, per the owner's call, so the
      whole hero block reads as one left edge rather than the name sticking
-     out further left than its own subtitle/button. */
-  h1, h2, .tagline, .hero-actions { margin-left: -1rem; }
+     out further left than its own subtitle/button. Scoped to .hero (not a
+     bare `h1, .hero-actions`) since 404.html reuses both classes for its
+     own centered content, which this left-shift would throw off. */
+  .hero h1, h2, .hero .tagline, .hero .hero-actions { margin-left: -1rem; }
 
   /* h2's border-bottom is a full-width line under a block box, so it needs
      the box itself to be 1rem wider on the right too, not just shifted

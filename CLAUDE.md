@@ -381,7 +381,9 @@ installed via Homebrew on this machine now (it wasn't before).
 
 Done: repo, SSH auth, Pages deploy, custom domain (cesarspace.online),
 responsive layout, theme toggle, skip link, focus styles, reduced-motion,
-Open Graph tags, résumé download button, print stylesheet, custom 404,
+Open Graph tags, résumé view button (opens the PDF in a new tab rather
+than forcing a download, so the visitor's browser PDF viewer handles
+print/save), print stylesheet, custom 404,
 hover-play video component, copy-email-to-clipboard button, scroll-spy nav,
 back-to-top button, favicon (`.ico`, multi-size), apple-touch-icon, and OG
 image. **No assets are 404ing anymore** — this was the last of them.
