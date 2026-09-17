@@ -104,8 +104,11 @@ content must stay sanitized:
   Pages serves `resume.html` directly at the extensionless `/resume` path
   natively, the same mechanism that makes `/` serve `index.html`; nothing
   extra needed in this repo). It exists so the hero's "View resume" button
-  (`index.html`, opens with `target="_blank"`) gets a page with the site's
-  own branding instead of a bare PDF in the tab — a direct link to the PDF
+  (`index.html`, a plain same-tab link — no `target="_blank"`, per the
+  owner's call that going back and forth between the résumé and the rest
+  of the site should feel like one tab, not two) gets a page with the
+  site's own branding instead of a bare PDF in the tab — a direct link to
+  the PDF
   asset shows a generic file icon, "resume.pdf" as the tab title, and the
   browser's own (unstyled, un-themed) PDF toolbar, none of which matches
   the site.
@@ -214,11 +217,11 @@ content must stay sanitized:
     `window.open()` fallback if that throws. It's guarded on
     `#resume-print`/`#resume-frame` both existing, same as before.
   - **`.resume-back`, a plain `.btn` reading "← Back to portfolio", sits
-    above the toolbar** (own line, `margin-bottom` under it) — a freshly
-    opened tab has no back-history to fall back on, and the header's own
-    "Cesar Vaca" brand link plus nav-links already cover in-page
-    navigation, so this is a second, more explicit way back for anyone
-    who lands here without having come from the header.
+    above the toolbar** (own line, `margin-bottom` under it) — the
+    browser's own back button works fine now that this opens in the same
+    tab (not `target="_blank"`), but this stays as a second, more
+    explicit way back, and still matters for anyone who lands here
+    directly (a shared link, a bookmark) with no back-history at all.
   - **The page title/heading say "Resume", not "Résumé"** — the owner's
     call, dropping the accents from the on-page text (the file path
     `assets/Cesar Vaca Resume.pdf`, `resume-preview.jpg`'s content, and
@@ -527,10 +530,10 @@ installed via Homebrew on this machine now (it wasn't before).
 
 Done: repo, SSH auth, Pages deploy, custom domain (cesarspace.online),
 responsive layout, theme toggle, skip link, focus styles, reduced-motion,
-Open Graph tags, résumé view button (opens `/resume` in a new tab — its
-own branded page with the site's header/theme and custom print/download
-buttons, not a direct link to the PDF asset; see the resume.html
-convention above), print stylesheet, custom 404,
+Open Graph tags, résumé view button (opens `/resume` in the same tab —
+its own branded page with the site's header/theme and custom
+print/download buttons, not a direct link to the PDF asset; see the
+resume.html convention above), print stylesheet, custom 404,
 hover-play video component, copy-email-to-clipboard button, scroll-spy nav,
 back-to-top button, favicon (`.ico`, multi-size), apple-touch-icon, and OG
 image. **No assets are 404ing anymore** — this was the last of them.
