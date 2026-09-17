@@ -161,7 +161,14 @@ img, video { max-width: 100%; height: auto; }
   text-decoration: none;
 }
 
-.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+/* (hover: hover) keeps this off touch devices -- without it, tapping an
+   icon button (the theme toggle especially) leaves it "stuck" highlighted
+   until the next scroll, since touch browsers apply :hover on tap and only
+   clear it on the next scroll/repaint, with no real pointer to un-hover
+   with. Devices with a mouse still get the highlight on real hover. */
+@media (hover: hover) {
+  .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+}
 
 .icon-btn .icon { width: 16px; height: 16px; }
 
