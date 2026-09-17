@@ -143,23 +143,64 @@ content must stay sanitized:
     `qlmanage -t -s 6000` (macOS Quick Look's thumbnail generator — no
     PyMuPDF/Pillow needed for this one; despite the name this isn't
     capped at some small "thumbnail" size, it renders at whatever `-s`
-    is given), then downsized to 2400px on the long edge and re-encoded
-    at JPEG quality 92 with `sips` (~1MB). **A first pass at 1600px/q65
-    (~385KB) came out visibly blurry** — the owner caught it immediately
-    — since 1600px isn't enough source resolution for a ~836px-wide
-    on-page display at 2x/retina (needs ~1670px minimum, with zero room
-    left for JPEG's own softening on top), and q65 compresses dense body
-    text noticeably harder than it does a certificate's mostly-white
-    layout. 2400px/q92 gives headroom above 2x retina at the page's
-    actual display width with no visible compression artifacts on the
-    text — confirmed by cropping the same region of both at matching
-    scale and comparing side by side. Don't regenerate this smaller
-    without re-checking it against real (not headless-sandboxed) retina
-    rendering — file size isn't the constraint here, legibility is. Like
-    the cert images and the OG image, **this has no committed generator
-    script** — a one-off terminal command, not saved in the repo — so
-    regenerating it after the résumé PDF changes means re-running that
-    command, not hand-editing the image.
+    is given), then downsized to **4139px** on the long edge (~376 DPI
+    for the page's 8.5in width) and re-encoded at **JPEG quality 96**
+    with `sips` (~2.2MB). This went through three passes before landing
+    here, each caught by the owner actually looking at it rather than by
+    anything measurable in this dev environment:
+    - **1600px/q65 (~385KB) came out visibly blurry** — 1600px isn't
+      enough source resolution for a ~836px-wide on-page display at
+      2x/retina (needs ~1670px minimum, with zero room left for JPEG's
+      own softening on top), and q65 compresses dense body text
+      noticeably harder than it does a certificate's mostly-white
+      layout.
+    - **2400px/q92 (~1MB) fixed the blur at normal viewing** but the
+      owner explicitly wanted it indistinguishable from the actual PDF,
+      not just "good enough at a glance" — 2400px only clears 2x retina
+      by a small margin, with no headroom for 3x devices or any amount
+      of zoom.
+    - **4139px/q96 is confirmed indistinguishable from a lossless PNG
+      at the same resolution** via pixel-level crop comparison (same
+      region, same scale, side by side — no visible ringing or
+      softening from JPEG at q96), and leaves ~28% headroom above what
+      a 3x-density display needs at this image's actual on-page CSS
+      width, so the browser is downscaling slightly rather than
+      upscaling at even the highest realistic display density.
+    - **This still isn't literally the same as the vector PDF at
+      unlimited zoom** — no finite-resolution raster image can be; if
+      someone pinch-zooms or browser-zooms far enough past normal
+      reading size, some softening is eventually inevitable. What 4139px
+      buys is "indistinguishable at any realistic viewing/zoom level,"
+      not "identical at infinite zoom" — the latter would require a
+      live vector renderer (either the browser's own PDF viewer, with
+      the zoom/pan-chrome problems that motivated dropping it, or a
+      bundled JS PDF renderer like PDF.js, which conflicts with this
+      project's no-dependencies rule). Don't regenerate this smaller to
+      save space without re-checking it against real (not
+      headless-sandboxed) high-density rendering — file size isn't the
+      constraint here, matching the PDF's own clarity is.
+  - **Unlike the cert images and the OG image, this one *does* have a
+    committed, reusable generator: `scripts/regenerate-resume-preview.sh`**
+    (macOS-only — `qlmanage`/`sips`, both built in, no PyMuPDF/Pillow).
+    The owner pushed back on the ad hoc-script pattern once they realized
+    it meant a manual re-rasterize-and-replace step every time they edit
+    their résumé; a real, reusable script removes the "re-derive the
+    right qlmanage/sips invocation from memory" part of that, and
+    **`.githooks/pre-commit` removes the rest** — it checks
+    `git diff --cached --name-only` for `assets/Cesar Vaca Resume.pdf`,
+    and if that file is part of the commit, runs the regenerate script
+    and `git add`s its output into the *same* commit automatically. End
+    result: updating the résumé is just "replace the PDF, `git add`,
+    `git commit`" — no separate conversion step to remember. The hook
+    only takes effect once per clone via
+    `git config core.hooksPath .githooks` (already set for the owner's
+    current clone; a fresh clone needs that command run once — `.git/hooks`
+    itself isn't tracked by git, which is why this lives in `.githooks`
+    and gets pointed to explicitly rather than just working automatically).
+    Verified end to end in an isolated scratch git repo (never touched the
+    real résumé or repo history): staging a modified PDF and running a
+    real `git commit` triggered the hook, which regenerated the preview
+    and included it in that same commit without any extra step.
   - **A second, hidden `<iframe id="resume-frame" class="resume-print-frame">`
     still points at the real PDF, solely so the Print button has
     something to print** — printing the flattened preview image would be
