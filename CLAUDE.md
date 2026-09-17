@@ -100,14 +100,19 @@ content must stay sanitized:
 - Accessibility is part of done: visible `:focus-visible` rings, working skip
   link, `prefers-reduced-motion` respected, `aria-label` on icon-only controls.
 - **Certifications are a card grid**, viewable inline — not a PDF behind a
-  button. Each `<article class="cert-card">` in `#certs` holds a landscape
-  (4:3, enforced via CSS `aspect-ratio`) image at
-  `assets/certs/<kebab-case-name>.jpg`, a title, and a "Verify with Credly"
-  link (omitted for credentials with no Credly badge, e.g. the degree). To add
-  a new one: drop the JPEG in that folder and add a matching card — no JSON
-  manifest or build step, consistent with how Projects are hand-authored.
-  `.projects-grid` and `.certs-grid` share the same 1-col mobile /
-  2-col-at-768px responsive pattern.
+  button. Each `<article class="cert-card">` in `#certs` holds the vendor's
+  square Credly badge PNG (not a scan of the certificate — see State for why
+  that changed) at `assets/certs/<kebab-case-name>.png`, `.cert-image` is
+  `aspect-ratio: 1 / 1` with `object-fit: contain` (the badge artwork is
+  already square, `contain` avoids ever cropping a logo the way `cover`
+  would), a title, and a "Verify with Credly" link (omitted for credentials
+  with no Credly badge, e.g. the degree). To add a new one: drop the badge
+  PNG in that folder and add a matching card — no JSON manifest or build
+  step, consistent with how Projects are hand-authored.
+  **`.certs-grid` has its own responsive pattern, not shared with
+  `.projects-grid`/`.skills-grid`** — 2-col mobile / 3-col at 768px (versus
+  1-col/2-col for the other two grids), since square badges read better
+  smaller and more-per-row than the wide project cards.
 - **Favicon/touch-icon are raster, not the originally-planned SVG monogram.**
   Source is a hand-drawn transparent PNG from the owner (originally a
   squinting face + a separate heart, spread across a tall canvas). Final mark
@@ -286,14 +291,18 @@ content must stay sanitized:
     attribute instead, and a matching `#mail-trigger::after` print rule
     appends it the same way. Keep both in sync if the address ever changes.
 - **Projects and Certifications each show only their first N cards** — N is
-  **2 below the 768px breakpoint, 4 at and above it**, not a fixed number.
-  Cards aren't pre-marked `hidden` in the markup for this anymore (a static
-  attribute can't encode "hidden on mobile, visible on desktop"); a
-  `setupExpandable()` helper in `js/main.js` (one call per grid) computes
-  the cutoff from `window.matchMedia('(min-width: 768px)')` and sets
-  `.hidden` on cards by index every time it renders — on load, on toggle
-  click, and again on a `matchMedia` `change` listener so resizing across
-  the breakpoint while still collapsed resyncs which cards are showing
+  **2 rows' worth at each grid's own column count**: Projects is 2 below the
+  768px breakpoint / 4 at and above it (1-col mobile / 2-col desktop
+  grid); Certifications is 4 / 6 (its grid is 2-col mobile / 3-col desktop
+  — see the Certifications convention above), passed into `setupExpandable()`
+  as explicit `mobileCount`/`desktopCount` arguments rather than a constant
+  shared by both grids. Cards aren't pre-marked `hidden` in the markup for
+  this anymore (a static attribute can't encode "hidden on mobile, visible
+  on desktop"); a `setupExpandable()` helper in `js/main.js` (one call per
+  grid) computes the cutoff from `window.matchMedia('(min-width: 768px)')`
+  and sets `.hidden` on cards by index every time it renders — on load, on
+  toggle click, and again on a `matchMedia` `change` listener so resizing
+  across the breakpoint while still collapsed resyncs which cards are showing
   (crossing it while already expanded does nothing, since everything's
   already visible). The toggle button (`#projects-toggle`, `#certs-toggle`)
   flips an `expanded` flag and re-renders — no navigation, same page. The
@@ -418,42 +427,40 @@ again rather than hand-editing pixels. Still exactly 1200×630, RGB PNG, no
 transparency (matches what Facebook/LinkedIn/iMessage preview cards
 expect).
 
-**Cert images are real now**, not placeholders — the owner sent the actual
-PDF certificates (sourced from
-`~/Library/CloudStorage/ProtonDrive-cesar@cvmail.me-folder/career/certs/`,
-also mirrored under iCloud `~/Library/Mobile Documents/.../work/certs/`), and
-each was rasterized with PyMuPDF at 1400px-long-edge, ~85 quality JPEG.
-All 7 source PDFs are US Letter landscape (792×612pt, or equivalent), so the
-JPEGs are ~1.294:1 — very close to but not exactly the `.cert-image`
-CSS's 4:3 box; `object-fit: cover` absorbs the difference invisibly.
+**Cert images are vendor Credly badge PNGs now, not scans of the
+certificates** — superseding an earlier approach (kept below for history,
+since the redaction technique may be useful again someday) where the owner's
+actual PDF certificates were rasterized to JPEG and then hand-redacted. The
+owner decided the badge artwork (square, transparent background, no personal
+info of any kind on it) was simpler and had nothing to sanitize in the first
+place, so the whole rasterize-then-redact-then-watermark pipeline was
+dropped rather than repeated. The 7 PNGs (`assets/certs/<kebab-case-name>.png`)
+were supplied directly by the owner, already square (ranging 600×600 to
+1654×1654 across the 7 — CSS normalizes the display size, see the
+Certifications convention above), with alpha transparency intact.
 
-**Every cert JPEG has since been redacted and watermarked in place**
-(129–219KB each now — bigger than the original 78–162KB range, since the
-tiled watermark adds fine-grained texture that costs more JPEG bytes than
-flat certificate backgrounds do). Per the owner's security concern about
-publishing a persistent personal identifier on a public page, every unique
-ID-like number on every cert image is painted over with a solid box and
-replaced with bold "REDACTED" text — not just CompTIA's literal "Candidate
-ID" field (same on all 4 CompTIA certs: pentest-plus, security-plus,
-network-plus, cloud-plus) but also each CompTIA cert's separate "Code:"
-verification code near the bottom, ISC2's "Certification Number" on the
-SSCP cert, AWS's "Validation Number" on the AWS cert, and the LPI
-verification code embedded in the visible URL on the Linux Essentials cert.
-The redaction box color matches each cert's local background (white for
-the light-background certs, the same dark navy as the card body on the AWS
-one) so it reads as part of the original design, not a crude patch. A
-tiled, rotated, semi-transparent "cesarspace.online" watermark (dark text
-on light certs, light text on the dark AWS one) is layered across every
-image afterward. **This has no committed source/generator script** (same
-pattern as the original PDF→JPEG rasterization and the OG image — a one-off
-Pillow script run ad hoc, not saved in the repo) — the redaction box
-coordinates were hand-measured per image via pixel-column/row projection
-scans and are specific to each cert's exact layout, so they are **not
-reusable** if any of these 7 images is ever regenerated from its source PDF
-again; redoing that would require re-locating and re-measuring the ID
-field(s) on the new image before redacting. None of the "Verify with
-Credly" links elsewhere on the page were touched — those still work as an
-independent, un-redacted verification path.
+<details>
+<summary>Superseded: JPEG scan + redaction/watermark pipeline (no longer in use)</summary>
+
+The owner had previously sent the actual PDF certificates (sourced from
+`~/Library/CloudStorage/ProtonDrive-cesar@cvmail.me-folder/career/certs/`,
+also mirrored under iCloud `~/Library/Mobile Documents/.../work/certs/`), each
+rasterized with PyMuPDF at 1400px-long-edge, ~85 quality JPEG, then redacted:
+every unique ID-like number (CompTIA's "Candidate ID" and "Code:" fields,
+ISC2's "Certification Number", AWS's "Validation Number", the LPI
+verification code in the Linux Essentials cert's visible URL) was painted
+over with a solid box matching the local background and replaced with bold
+"REDACTED" text, then a tiled, rotated, semi-transparent "cesarspace.online"
+watermark was layered over the whole image. None of this had a committed
+generator script (one-off Pillow scripts run ad hoc), and the redaction box
+coordinates were hand-measured per image, so they were never reusable if a
+cert image needed regenerating from its source PDF. This is all now moot —
+the JPEGs have been deleted from `assets/certs/` and replaced by the badge
+PNGs described above — but the technique is documented here in case a future
+credential only has a scan available (no vendor badge) and needs the same
+treatment.
+
+</details>
 
 The **UMGC degree card is removed for now** — the owner doesn't have that
 credential's file ready yet. Re-add it the same way: a `cert-card` with an
