@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Theme must be set before first paint to avoid a flash of the wrong theme -->
+  <script>
+    (function () {
+      var theme = 'dark';
+      try {
+        var saved = localStorage.getItem('theme');
+        theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      } catch (e) {}
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <title>Resume &mdash; Cesar Vaca</title>
+  <link rel="canonical" href="https://cesarspace.online/resume">
+
+  <!-- Favicons -->
+  <link rel="icon" href="assets/img/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!--
+    Same header as index.html (brand, nav-links, mail flyout, LinkedIn,
+    theme toggle) so this page reads as part of the site rather than a
+    bare utility page. Nav links point back to /#about etc. since there
+    are no matching sections on this page for a bare #about to scroll to.
+  -->
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a href="/" class="nav-brand">Cesar Vaca</a>
+
+      <ul class="nav-links">
+        <li><a href="/#about">About</a></li>
+        <li><a href="/#skills">Skills</a></li>
+        <li><a href="/#projects">Projects</a></li>
+        <li><a href="/#certs">Certifications</a></li>
+      </ul>
+
+      <div class="nav-controls">
+        <div class="mail-control">
+          <button class="icon-btn" id="mail-trigger" type="button" aria-label="Email Cesar Vaca" data-email="contact@cesarspace.online">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="m3 6.5 9 6.5 9-6.5"></path>
+            </svg>
+          </button>
+          <div class="mail-flyout">
+            <span class="mail-flyout-address">contact@cesarspace.online</span>
+            <button id="copy-email" class="icon-btn copy-email-btn" type="button" aria-label="Copy email address">
+              <svg class="icon icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <rect x="9" y="9" width="12" height="12" rx="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <svg class="icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <a class="icon-btn" href="https://www.linkedin.com/in/cesar-vaca" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <rect x="2" y="2" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2"></rect>
+            <text x="12" y="16.5" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">in</text>
+          </svg>
+        </a>
+        <button id="theme-toggle" class="icon-btn theme-toggle" type="button" aria-label="Switch color theme">
+          <span aria-hidden="true">&#9680;</span>
+        </button>
+      </div>
+    </nav>
+    <div class="header-rule"><span></span></div>
+  </header>
+
+  <p id="copy-email-status" class="visually-hidden" aria-live="polite"></p>
+
+  <main id="main">
+    <a class="btn resume-back" href="/">&larr; Back to portfolio</a>
+
+    <div class="resume-toolbar">
+      <h1>Resume</h1>
+      <div class="resume-toolbar-actions">
+        <button id="resume-print" class="icon-btn" type="button" aria-label="Print resume">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+        </button>
+        <a id="resume-download" class="icon-btn" href="assets/Cesar%20Vaca%20Resume.pdf" download="Cesar Vaca Resume.pdf" aria-label="Download resume">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M12 3v12"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <path d="M4 19h16"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!--
+      A static, pre-rendered image of the resume (assets/img/resume-preview.jpg,
+      generated ad hoc from the PDF -- see CLAUDE.md) rather than an embedded
+      PDF viewer: a live viewer comes with its own zoom/pan controls and its
+      own background showing wherever the page doesn't exactly fill the
+      frame, neither of which is wanted here. An <img> just scales to the
+      page width like any other image, on desktop and mobile alike, with
+      no interaction beyond that.
+    -->
+    <img class="resume-embed" src="assets/img/resume-preview.jpg" alt="Cesar Vaca resume" width="1854" height="2400">
+
+    <!--
+      Hidden, not removed: the visible resume above is a flattened image,
+      but printing should still print the real (vector, crisp) PDF. This
+      iframe exists only so the Print button has a same-origin PDF document
+      to call .contentWindow.print() on -- see js/main.js.
+    -->
+    <iframe id="resume-frame" class="resume-print-frame" src="assets/Cesar%20Vaca%20Resume.pdf" title="Cesar Vaca resume (print source)" aria-hidden="true" tabindex="-1"></iframe>
+  </main>
+
+  <script src="js/main.js"></script>
+
+</body>
+</html>

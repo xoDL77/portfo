@@ -495,6 +495,51 @@ main section p { text-align: justify; }
 }
 
 /* ============================================================
+   Resume viewer
+   ============================================================ */
+
+.resume-back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.resume-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.resume-toolbar h1 { margin: 0; }
+
+.resume-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.resume-embed {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Not display: none -- some browsers skip initializing a PDF document in a
+   zero-size or display:none iframe, which this exists purely to keep
+   available for window.print(). Sized to 1px and moved off-screen instead
+   of just opacity: 0, so it can never receive layout, focus, or clicks. */
+.resume-print-frame {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  border: 0;
+}
+
+/* ============================================================
    Tablet and up
    ============================================================ */
 
