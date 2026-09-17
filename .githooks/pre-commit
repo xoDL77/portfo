@@ -1,0 +1,17 @@
+#!/bin/bash
+# Auto-regenerates assets/img/resume-preview.jpg whenever
+# "assets/Cesar Vaca Resume.pdf" is staged as part of a commit, so
+# replacing the PDF and committing is the only step needed -- see
+# scripts/regenerate-resume-preview.sh for the actual conversion.
+#
+# This hook only runs if it's enabled, once per clone:
+#   git config core.hooksPath .githooks
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+if git diff --cached --name-only | grep -qF "assets/Cesar Vaca Resume.pdf"; then
+  echo "Résumé PDF changed -- regenerating resume-preview.jpg..."
+  ./scripts/regenerate-resume-preview.sh
+  git add assets/img/resume-preview.jpg
+fi
