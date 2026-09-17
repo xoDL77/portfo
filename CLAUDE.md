@@ -99,6 +99,111 @@ content must stay sanitized:
   absent. Vanilla JS, no build step, so no ES module syntax.
 - Accessibility is part of done: visible `:focus-visible` rings, working skip
   link, `prefers-reduced-motion` respected, `aria-label` on icon-only controls.
+- **The résumé has its own page, `resume.html`, reachable at
+  `https://cesarspace.online/resume`** (no `.html`, no redirect — GitHub
+  Pages serves `resume.html` directly at the extensionless `/resume` path
+  natively, the same mechanism that makes `/` serve `index.html`; nothing
+  extra needed in this repo). It exists so the hero's "View resume" button
+  (`index.html`, opens with `target="_blank"`) gets a page with the site's
+  own branding instead of a bare PDF in the tab — a direct link to the PDF
+  asset shows a generic file icon, "resume.pdf" as the tab title, and the
+  browser's own (unstyled, un-themed) PDF toolbar, none of which matches
+  the site.
+  - **It reuses the full `index.html` header** (brand, nav-links, mail
+    flyout, LinkedIn, theme toggle) rather than being a minimal page like
+    `404.html`, per the owner's call that it should feel like part of the
+    site, not a bare utility page — so dark/light mode and every header
+    control work here exactly like on the homepage. `js/main.js` is
+    included in full; every IIFE it doesn't need (scroll-spy, back-to-top,
+    the show-more toggles, project description clamp, skill list expand)
+    self-guards on elements that don't exist on this page and no-ops, per
+    the established `js/main.js` convention. **The nav-links point to
+    `/#about`, `/#skills`, etc. (absolute, with the leading `/`)**, not
+    bare `#about` — a bare fragment link would just look for that id on
+    `resume.html` itself, find nothing, and go nowhere; the same reasoning
+    applies to `.nav-brand`'s `href="/"` instead of `#top`. None of these
+    links ever show `.is-active` (scroll-spy has no `main section[id]` to
+    observe here), which is fine — they're simple navigation on this page.
+  - **The visible résumé is a static, pre-rendered image
+    (`assets/img/resume-preview.jpg`), not a live embedded PDF viewer** —
+    this is the second design, not the first. The first version embedded
+    the actual PDF via `<iframe>` sized with `aspect-ratio: 612 / 792`
+    (the PDF's real MediaBox, US Letter portrait) inside a padded
+    `.resume-embed-wrap` "mat", to compensate for the browser's own PDF
+    viewer background showing through unevenly around the page. The
+    owner's reaction: they didn't want the browser's PDF viewer at all —
+    its built-in zoom/pan controls didn't belong on a page meant to look
+    like the rest of the site, and no amount of matting fixed that it was
+    still someone else's UI. Switched to a plain `<img>` instead: no
+    zoom, no pan, no viewer chrome of any kind, just scales to the page's
+    width like every other image on the site, identically on desktop and
+    mobile. **No bezel/mat either** — that was specifically un-asked-for
+    once the iframe (the thing the mat existed to hide) was gone.
+    `assets/img/resume-preview.jpg` was rendered from the PDF with
+    `qlmanage -t -s 6000` (macOS Quick Look's thumbnail generator — no
+    PyMuPDF/Pillow needed for this one; despite the name this isn't
+    capped at some small "thumbnail" size, it renders at whatever `-s`
+    is given), then downsized to 2400px on the long edge and re-encoded
+    at JPEG quality 92 with `sips` (~1MB). **A first pass at 1600px/q65
+    (~385KB) came out visibly blurry** — the owner caught it immediately
+    — since 1600px isn't enough source resolution for a ~836px-wide
+    on-page display at 2x/retina (needs ~1670px minimum, with zero room
+    left for JPEG's own softening on top), and q65 compresses dense body
+    text noticeably harder than it does a certificate's mostly-white
+    layout. 2400px/q92 gives headroom above 2x retina at the page's
+    actual display width with no visible compression artifacts on the
+    text — confirmed by cropping the same region of both at matching
+    scale and comparing side by side. Don't regenerate this smaller
+    without re-checking it against real (not headless-sandboxed) retina
+    rendering — file size isn't the constraint here, legibility is. Like
+    the cert images and the OG image, **this has no committed generator
+    script** — a one-off terminal command, not saved in the repo — so
+    regenerating it after the résumé PDF changes means re-running that
+    command, not hand-editing the image.
+  - **A second, hidden `<iframe id="resume-frame" class="resume-print-frame">`
+    still points at the real PDF, solely so the Print button has
+    something to print** — printing the flattened preview image would be
+    lower quality than the vector PDF, so this iframe (1px, positioned at
+    `top/left: -9999px`, not `display: none` — some browsers skip
+    initializing a PDF document in a zero-size or `display: none` iframe,
+    which would silently break printing) stays loaded in the background.
+    The Print button's `js/main.js` IIFE ("Resume print button") is
+    unchanged from the first design: `frame.contentWindow.print()` on
+    this iframe hands off to the browser's native PDF print flow, with a
+    `window.open()` fallback if that throws. It's guarded on
+    `#resume-print`/`#resume-frame` both existing, same as before.
+  - **`.resume-back`, a plain `.btn` reading "← Back to portfolio", sits
+    above the toolbar** (own line, `margin-bottom` under it) — a freshly
+    opened tab has no back-history to fall back on, and the header's own
+    "Cesar Vaca" brand link plus nav-links already cover in-page
+    navigation, so this is a second, more explicit way back for anyone
+    who lands here without having come from the header.
+  - **The page title/heading say "Resume", not "Résumé"** — the owner's
+    call, dropping the accents from the on-page text (the file path
+    `assets/Cesar Vaca Resume.pdf`, `resume-preview.jpg`'s content, and
+    CLAUDE.md's own prose weren't part of that; only what's rendered as
+    text on `resume.html` changed).
+  - A `.resume-toolbar` above the image holds an `<h1>Resume</h1>` and two
+    `.icon-btn`-styled controls matching the header's icon buttons: the
+    Print button above, and a Download link (`download="Cesar Vaca
+    Resume.pdf"` on a plain `<a>` pointed at the real PDF, forces a save
+    rather than navigating).
+  - Unlike `404.html`, this page uses **relative** paths for its
+    assets/favicon/stylesheet/PDF/preview image — it's always loaded at
+    exactly `/resume` or `/resume.html`, never an arbitrary depth, so
+    relative paths resolve correctly (they don't need `/`-prefixing the
+    way 404's paths do).
+  - **The Print button's actual print dialog still couldn't be visually
+    verified end-to-end** in this environment — the sandboxed headless
+    Chromium used for testing has no PDF viewer plugin at all
+    (`navigator.plugins` is empty; even a bare top-level navigation to
+    the PDF triggers a download instead of viewing it), so
+    `contentWindow.print()` on the hidden iframe is a no-op here
+    regardless of what caused it. Real desktop and mobile browsers ship
+    PDF viewing enabled by default. Everything else — the preview image
+    rendering and scaling correctly at every width, header, theme
+    toggle, mail flyout, toolbar layout, no console errors — was
+    confirmed working in that same sandbox.
 - **Certifications are a card grid**, viewable inline — not a PDF behind a
   button. Each `<article class="cert-card">` in `#certs` holds the vendor's
   square Credly badge PNG (not a scan of the certificate — see State for why
@@ -381,9 +486,10 @@ installed via Homebrew on this machine now (it wasn't before).
 
 Done: repo, SSH auth, Pages deploy, custom domain (cesarspace.online),
 responsive layout, theme toggle, skip link, focus styles, reduced-motion,
-Open Graph tags, résumé view button (opens the PDF in a new tab rather
-than forcing a download, so the visitor's browser PDF viewer handles
-print/save), print stylesheet, custom 404,
+Open Graph tags, résumé view button (opens `/resume` in a new tab — its
+own branded page with the site's header/theme and custom print/download
+buttons, not a direct link to the PDF asset; see the resume.html
+convention above), print stylesheet, custom 404,
 hover-play video component, copy-email-to-clipboard button, scroll-spy nav,
 back-to-top button, favicon (`.ico`, multi-size), apple-touch-icon, and OG
 image. **No assets are 404ing anymore** — this was the last of them.
@@ -596,6 +702,11 @@ shouldn't be public.
   into absolute paths or URLs.
 - `404.html` cannot be tested with Live Server; only the deployed Pages URL
   serves it.
+- **`resume.html`'s pretty URL (`/resume`) only works on the deployed GitHub
+  Pages site** — Live Server and any plain static file server (Python's
+  `http.server`, etc.) don't do GitHub Pages' extensionless-path resolution,
+  so locally you have to hit `/resume.html` directly. Same underlying
+  limitation as the `404.html` Live Server gotcha above.
 - The owner is new to VS Code and Git. Explain terminal commands rather than
   just issuing them, and prefer reversible operations (`mv` to Trash over
   `rm -rf`) when cleaning up.

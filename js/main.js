@@ -512,3 +512,27 @@
   window.addEventListener('scroll', closeFlyout, { passive: true });
   window.addEventListener('touchmove', closeFlyout, { passive: true });
 })();
+
+
+/* ============================================================
+   Resume print button (resume.html only)
+   Printing the outer page would print the site header/toolbar along
+   with it; calling print() on the (same-origin) iframe's own window
+   instead prints just the embedded PDF, through the browser's native
+   PDF print flow.
+   ============================================================ */
+
+(function () {
+  var printBtn = document.getElementById('resume-print');
+  var frame = document.getElementById('resume-frame');
+  if (!printBtn || !frame) return;
+
+  printBtn.addEventListener('click', function () {
+    try {
+      frame.contentWindow.focus();
+      frame.contentWindow.print();
+    } catch (e) {
+      window.open(frame.getAttribute('src'), '_blank');
+    }
+  });
+})();
