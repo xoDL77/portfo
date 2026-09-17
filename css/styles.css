@@ -165,7 +165,29 @@ img, video { max-width: 100%; height: auto; }
 
 .icon-btn .icon { width: 16px; height: 16px; }
 
-.theme-toggle { font-size: 1rem; }
+/* Shows what you'll switch away from, not what you're currently in --
+   a moon in light mode, a sun in dark mode. Cross-fades between them on
+   toggle the same way .copy-email-btn morphs its copy icon into a
+   checkmark: both icons stacked via position: absolute (centered by the
+   button's own flex alignment, same as the copy-email icons -- neither
+   needs explicit inset values), opacity/scale swapped by theme instead
+   of a hard display: none/block cut. */
+.theme-toggle .icon {
+  position: absolute;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.theme-toggle .icon-moon,
+.theme-toggle .icon-sun {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+[data-theme="light"] .theme-toggle .icon-moon,
+[data-theme="dark"] .theme-toggle .icon-sun {
+  opacity: 1;
+  transform: scale(1);
+}
 
 .mail-control { position: relative; }
 
