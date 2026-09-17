@@ -247,6 +247,71 @@
 
 
 /* ============================================================
+   Skill list expand
+   Same cutoff as the grids above (2 items on mobile, 4 at the
+   768px breakpoint), but per skill-group rather than one toggle for
+   the whole section, and worded/styled like the .project-desc-toggle
+   "read more" buttons instead of the grid-level "Show more" button.
+   ============================================================ */
+
+(function () {
+  var desktopQuery = window.matchMedia('(min-width: 768px)');
+  var groups = [];
+
+  Array.prototype.forEach.call(document.querySelectorAll('.skill-group'), function (group) {
+    var list = group.querySelector('.skill-list');
+    var toggle = group.querySelector('.skill-toggle');
+    if (!list || !toggle) return;
+
+    groups.push({
+      items: Array.prototype.slice.call(list.children),
+      toggle: toggle,
+      label: toggle.querySelector('.show-more-label'),
+      expanded: false
+    });
+  });
+
+  if (!groups.length) return;
+
+  function collapsedCount() {
+    return desktopQuery.matches ? 4 : 2;
+  }
+
+  function render(g) {
+    var count = collapsedCount();
+    var hasExtra = g.items.length > count;
+
+    g.items.forEach(function (li, i) {
+      li.hidden = !g.expanded && i >= count;
+    });
+
+    g.toggle.hidden = !hasExtra;
+    if (!hasExtra) return;
+
+    g.toggle.setAttribute('aria-expanded', String(g.expanded));
+    if (g.label) g.label.textContent = g.expanded ? 'read less' : 'read more';
+  }
+
+  groups.forEach(function (g) {
+    g.toggle.addEventListener('click', function () {
+      g.expanded = !g.expanded;
+      render(g);
+    });
+    render(g);
+  });
+
+  // Crossing the 768px breakpoint while a group is still collapsed changes
+  // how many of its items should be showing (2 vs 4) — resync in that
+  // case, same as the grid-level toggles above.
+  desktopQuery.addEventListener('change', function () {
+    groups.forEach(function (g) {
+      if (!g.expanded) render(g);
+    });
+  });
+})();
+
+
+/* ============================================================
    Project description clamp
    Each .project-desc is clamped to 3 lines via CSS; this measures
    whether that clamp actually cut anything off (scrollHeight exceeds
