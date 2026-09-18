@@ -2,8 +2,10 @@
 
 Personal cybersecurity portfolio for Cesar Vaca. Static site, no build step,
 no framework. Live at https://cesarspace.online/ (custom domain; DNS is set
-and the site resolves there, HTTPS enforcement in GitHub Pages settings is
-still pending certificate issuance as of 2026-09-12). The old
+and the site resolves and serves correctly over **plain HTTP**, but **HTTPS
+is still broken as of 2026-09-18** — GitHub never issued the certificate,
+because the domain's Cloudflare DNS records were proxied. See roadmap step 5
+and the two Cloudflare/TLS gotchas at the bottom). The old
 `https://xodl77.github.io/portfo/` address still works as GitHub Pages'
 default URL for the repo.
 
@@ -736,10 +738,32 @@ real phone before batching the rest.
 `CNAME` (`cesarspace.online`) is in the repo root, DNS A records point at
 GitHub Pages, and the site resolves there now. `404.html`'s absolute paths
 and `index.html`'s canonical/OG URLs are updated to the new root (`/` instead
-of `/portfo/`). Still outstanding: DNS is not fully propagated everywhere
-yet, and "Enforce HTTPS" in repo Settings → Pages is waiting on GitHub's
-certificate issuance — check that box is checked once the cert is ready
-(it can silently stay unchecked after issuance and needs a manual click).
+of `/portfo/`). Still outstanding: **HTTPS does not work at all yet.**
+`https://cesarspace.online/` fails TLS outright — `curl: (60) SSL: no
+alternative certificate subject name matches target host name
+'cesarspace.online'`, HTTP status `000`, no response body — because GitHub
+Pages never issued a certificate for the custom domain and is serving one
+that doesn't cover it. Plain HTTP serves the site correctly in the meantime,
+which is what masks the problem in a browser.
+
+Root cause, found 2026-09-18: the domain's DNS is hosted at Cloudflare and
+its records were **proxied** (orange cloud), which prevents GitHub's
+certificate challenge from completing. The fix is to set every record for the
+site — the apex `A` records pointing at GitHub's Pages IPs and the `www`
+`CNAME` — to **DNS only** (grey cloud), then wait for the cert to issue. The
+challenge itself runs over plain HTTP, which already works, so nothing else
+blocks issuance once the records are unproxied. If the cert still hasn't
+appeared after an hour or so, remove the custom domain in Settings → Pages,
+save, re-add it, and save — that re-triggers issuance. Once it's issued,
+check "Enforce HTTPS" (it can silently stay unchecked after issuance and
+needs a manual click). Verify with:
+
+```
+curl -sS -o /dev/null -w '%{http_code} %{content_type}\n' https://cesarspace.online/assets/img/og-image.png
+```
+
+`200 image/png` means it's fixed; `000` plus a `curl: (60)` error means the
+cert still isn't there.
 
 ### 6. Pre-launch check
 
@@ -757,6 +781,33 @@ shouldn't be public.
   `/portfo/`. That subpath only applies to the legacy
   `xodl77.github.io/portfo/` GitHub Pages default URL — don't reintroduce it
   into absolute paths or URLs.
+- **Cloudflare proxying (the orange cloud) blocks GitHub Pages certificate
+  issuance.** If the domain's DNS lives at Cloudflare, every record for the
+  site has to be **DNS only** (grey cloud) or GitHub's certificate challenge
+  never completes and no cert is ever issued. This is why HTTPS was broken
+  here — see roadmap step 5 for the full fix and the verification command.
+- **A missing HTTPS certificate makes link previews show a random cert badge
+  instead of the OG image** — and it looks exactly like someone changed
+  `og:image`, which is the trap. Symptom: sharing the site in iMessage (or
+  anything else that unfurls links) produces a card with the correct title
+  and domain but a CompTIA badge as the picture. The cause is that
+  `og:image` is an **absolute `https://` URL** while every `<img>` on the
+  page uses a **relative** path: with the cert broken, a crawler fetches the
+  page fine over HTTP (so the title comes through), fails TLS on the absolute
+  OG image URL, gets nothing, and falls back to scraping the page's own
+  images — which resolve against `http://` and load fine — landing on
+  whichever cert badge its heuristics like. Every device shows the same
+  thing, so it reads as a server-side change rather than a cache, and chasing
+  it as a caching bug wastes a lot of time. **Don't "fix" this in the
+  markup** — don't edit `og:image`, don't make it relative, don't repoint it
+  at the `github.io` host. The tag is correct and the image really is there
+  (it loads over plain HTTP). Fix the certificate and the card comes back on
+  its own.
+- **`curl -s` hides TLS errors.** `curl -sI https://…` against a host with a
+  bad cert prints *absolutely nothing* and returns you to the prompt, which
+  reads like a network or DNS problem instead of a certificate one. Use
+  `-sS` (quiet, but still shows errors) or add
+  `-w '%{http_code}\n'` when diagnosing anything about the live site.
 - `404.html` cannot be tested with Live Server; only the deployed Pages URL
   serves it.
 - **`resume.html`'s pretty URL (`/resume`) only works on the deployed GitHub
