@@ -433,9 +433,20 @@ main section p { text-align: justify; }
   box-sizing: border-box;
 }
 
+/* Same color/size as .project-desc-toggle ("read more"), minus the
+   italic -- the owner wanted the vendor line visually secondary to the
+   cert name below it, the same way "read more" reads as secondary to a
+   project's own description, without borrowing that link-like italic
+   styling since this isn't a toggle. */
+.cert-vendor {
+  margin: 0.75rem 1rem 0.15rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
 .cert-title {
   font-size: 1.05rem;
-  margin: 0.75rem 1rem 1rem;
+  margin: 0 1rem 1rem;
 }
 
 /* Always-visible tap/click affordance, pinned to the card's own
