@@ -25,6 +25,39 @@
 
 
 /* ============================================================
+   Header icon-btn tap flash
+   .icon-btn:hover in the CSS is gated to (hover: hover) devices only, to
+   avoid a stuck-highlight bug on touch (see that rule's comment) -- this
+   is the touch replacement: a brief one-shot flash on tap instead of a
+   sustained highlight, for the three buttons the owner actually wants
+   feedback on (mail, LinkedIn, theme toggle), not every .icon-btn on the
+   page (e.g. not the copy-email button inside the mail flyout).
+   ============================================================ */
+
+(function () {
+  if (window.matchMedia('(hover: hover)').matches) return;
+
+  var buttons = document.querySelectorAll('#mail-trigger, .nav-controls a.icon-btn, #theme-toggle');
+  if (!buttons.length) return;
+
+  Array.prototype.forEach.call(buttons, function (btn) {
+    btn.addEventListener('click', function () {
+      // Remove-then-reflow-then-add restarts the CSS animation even if
+      // tapped again before the previous flash finished, rather than the
+      // second tap silently doing nothing because the class never changed.
+      btn.classList.remove('is-flash');
+      void btn.offsetWidth;
+      btn.classList.add('is-flash');
+    });
+
+    btn.addEventListener('animationend', function () {
+      btn.classList.remove('is-flash');
+    });
+  });
+})();
+
+
+/* ============================================================
    Hover-to-play demo videos
    Falls back to tap-to-toggle where hover doesn't exist.
    ============================================================ */
@@ -96,13 +129,52 @@
     }, 1000);
   }
 
-  btn.addEventListener('click', function () {
+  // navigator.clipboard only exists in a secure context (HTTPS or
+  // localhost) — this site's custom domain currently only serves over
+  // plain HTTP (HTTPS is broken, see CLAUDE.md), so on the deployed site
+  // navigator.clipboard is undefined today and writeText() would throw
+  // before ever reaching .then(). This fallback (select a hidden textarea,
+  // document.execCommand('copy')) works in an insecure context, so copying
+  // still works on the live site until the cert issue is fixed — remove it
+  // once HTTPS is enforced and navigator.clipboard is reliably available.
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '0';
+    ta.style.opacity = '0';
+    ta.style.pointerEvents = 'none';
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    var ok = false;
     try {
+      ok = document.execCommand('copy');
+    } catch (e) {
+      ok = false;
+    }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  btn.addEventListener('click', function () {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(email).then(function () {
         showCopied('Email address copied to clipboard.');
       }, function () {
         if (status) status.textContent = 'Could not copy automatically — email is above.';
       });
+      return;
+    }
+
+    try {
+      if (fallbackCopy(email)) {
+        showCopied('Email address copied to clipboard.');
+      } else if (status) {
+        status.textContent = 'Could not copy automatically — email is above.';
+      }
     } catch (e) {
       if (status) status.textContent = 'Could not copy automatically — email is above.';
     }
