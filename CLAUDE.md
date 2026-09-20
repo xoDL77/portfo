@@ -257,9 +257,24 @@ content must stay sanitized:
   that changed) at `assets/certs/<kebab-case-name>.png`, `.cert-image` is
   `aspect-ratio: 1 / 1` with `object-fit: contain` (the badge artwork is
   already square, `contain` avoids ever cropping a logo the way `cover`
-  would), and a title. To add a new one: drop the badge PNG in that folder
-  and add a matching card — no JSON manifest or build step, consistent with
-  how Projects are hand-authored.
+  would), then a vendor line and a title. To add a new one: drop the badge
+  PNG in that folder and add a matching card — no JSON manifest or build
+  step, consistent with how Projects are hand-authored.
+  **The vendor and cert name are two separate elements, not one combined
+  heading** — `.cert-vendor` (e.g. "CompTIA", "(ISC)²", "AWS", "Linux
+  Professional Institute") is its own `<p>` above `.cert-title` (e.g.
+  "PenTest+", "SSCP", "Certified Cloud Practitioner", "Linux Essentials"),
+  where `.cert-title` used to hold the whole combined name by itself (e.g.
+  "CompTIA PenTest+") before the owner asked for the vendor split out and
+  visually de-emphasized. `.cert-vendor` intentionally reuses
+  `.project-desc-toggle`'s exact `color: var(--text-muted)` and
+  `font-size: 0.85rem` (the "read more" text under a project description)
+  since the owner pointed to that as the look they wanted — but without
+  its `font-style: italic`, since `.cert-vendor` is a plain label, not a
+  toggle control. Splitting the vendor out doesn't change which text is
+  in `aria-label`/alt text elsewhere (those still spell out the full
+  credential name, e.g. `aria-label="Verify CompTIA PenTest+ with
+  Credly"`) — only the on-card heading changed.
   **`.certs-grid` has its own responsive pattern, not shared with
   `.projects-grid`/`.skills-grid`** — 2-col mobile / 3-col at 768px (versus
   1-col/2-col for the other two grids), since square badges read better
@@ -270,14 +285,15 @@ content must stay sanitized:
   since: first just the badge image was the link, then the owner asked
   for the title to be clickable too, so `.cert-badge-trigger` (a real
   `<a href="https://credly.com/...">`, not a `<button>` revealing
-  something else) now wraps **both** the `<img>` and the `<h3
-  class="cert-title">`, as siblings inside it — a tap or click anywhere
-  on the card's image or title navigates, identically to the header's
-  LinkedIn icon link, so touch visitors need no JS at all for the core
-  interaction. `.cert-badge-trigger` sets `color: inherit` so the title
-  text doesn't pick up the default `a { color: var(--accent) }` link
-  color just from being nested inside the anchor — it still reads as a
-  normal heading. `.cert-card` itself (not a separate `.cert-verify-control`
+  something else) now wraps the `<img>`, `.cert-vendor`, **and**
+  `.cert-title`, as siblings inside it — a tap or click anywhere on the
+  card's image, vendor line, or title navigates, identically to the
+  header's LinkedIn icon link, so touch visitors need no JS at all for
+  the core interaction. `.cert-badge-trigger` sets `color: inherit` so
+  neither text element picks up the default `a { color: var(--accent) }`
+  link color just from being nested inside the anchor — `.cert-vendor`
+  still explicitly sets its own muted color on top of that (see above),
+  and `.cert-title` still reads as a normal heading. `.cert-card` itself (not a separate `.cert-verify-control`
   wrapper div — there used to be one, but once the whole card became the
   link there was no reason to keep a redundant nested `position: relative`
   container) carries `position: relative` so `.cert-badge-icon` and
@@ -760,8 +776,9 @@ treatment.
 The **UMGC degree card is removed for now** — the owner doesn't have that
 credential's file ready yet. Re-add it the same way: a `cert-card` with a
 bare `<img class="cert-image">` (no `<a>`/`.cert-badge-icon`/
-`.cert-verify-flyout`, since degrees don't have Credly badges) and an
-`<h3>`.
+`.cert-verify-flyout`, since degrees don't have Credly badges), a
+`<p class="cert-vendor">` (e.g. "University of Maryland Global Campus"),
+and an `<h3 class="cert-title">` for the degree name.
 
 The "Verify with Credly" links are **real** — extracted from the hyperlink
 annotations in `assets/Cesar Vaca Resume.pdf` (the visible cert names in that

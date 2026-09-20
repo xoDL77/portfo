@@ -386,11 +386,16 @@
       <!--
         One <article class="cert-card"> per credential, showing the
         vendor's Credly badge PNG (square) rather than a scan of the
-        certificate. The whole card is the Credly link now: .cert-badge-trigger
-        is a real <a> wrapping both the <img> and the <h3> title, so a tap
-        anywhere on the card (badge or title) just navigates -- no JS
-        required on touch. .cert-badge-icon (a plain arrow-up-right glyph)
-        sits in the card's bottom-right corner as an always-visible tap/click
+        certificate, then two lines of text: .cert-vendor (the issuing
+        org, e.g. "CompTIA") and .cert-title (the credential's own name,
+        e.g. "PenTest+") -- previously one combined <h3> ("CompTIA
+        PenTest+"), split into two elements so the vendor can read as
+        visually secondary to the cert name. The whole card is the Credly
+        link: .cert-badge-trigger is a real <a> wrapping the <img>,
+        .cert-vendor, and .cert-title together, so a tap anywhere on the
+        card (badge, vendor, or title) just navigates -- no JS required on
+        touch. .cert-badge-icon (a plain arrow-up-right glyph) sits in the
+        card's bottom-right corner as an always-visible tap/click
         affordance, and .cert-verify-flyout is a decorative, non-interactive
         label that js/main.js fades in and moves with the cursor on
         real-mouse hover only (desktop); both are direct children of
@@ -401,13 +406,15 @@
         filename) and add a matching card here. For a credential with no
         Credly badge (e.g. a degree): skip the <a>/.cert-badge-icon/
         .cert-verify-flyout entirely and use a bare <img class="cert-image">
-        plus <h3> as direct children of <article class="cert-card">.
+        plus <p class="cert-vendor">/<h3 class="cert-title"> as direct
+        children of <article class="cert-card">.
       -->
       <div class="certs-grid">
         <article class="cert-card">
           <a class="cert-badge-trigger" href="https://www.credly.com/badges/893e9ba2-42d3-4b56-922e-d79908ea648e/public_url" target="_blank" rel="noopener noreferrer" aria-label="Verify CompTIA PenTest+ with Credly">
             <img class="cert-image" src="assets/certs/pentest-plus.png" alt="CompTIA PenTest+ badge" width="601" height="601" loading="lazy">
-            <h3 class="cert-title">CompTIA PenTest+</h3>
+            <p class="cert-vendor">CompTIA</p>
+            <h3 class="cert-title">PenTest+</h3>
           </a>
           <span class="cert-badge-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -420,7 +427,8 @@
         <article class="cert-card">
           <a class="cert-badge-trigger" href="https://www.credly.com/badges/abeb1d9f-e3be-4571-bfea-fd5beabeaebd/public_url" target="_blank" rel="noopener noreferrer" aria-label="Verify CompTIA Security+ with Credly">
             <img class="cert-image" src="assets/certs/security-plus.png" alt="CompTIA Security+ badge" width="601" height="601" loading="lazy">
-            <h3 class="cert-title">CompTIA Security+</h3>
+            <p class="cert-vendor">CompTIA</p>
+            <h3 class="cert-title">Security+</h3>
           </a>
           <span class="cert-badge-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -431,9 +439,10 @@
           <span class="cert-verify-flyout" aria-hidden="true">Verify with Credly</span>
         </article>
         <article class="cert-card">
-          <a class="cert-badge-trigger" href="https://www.credly.com/badges/cc08c910-19b8-47a9-a869-72b4d916efad/public_url" target="_blank" rel="noopener noreferrer" aria-label="Verify (ISC)&sup2; SSCP with Credly">
+          <a class="cert-badge-trigger" href="https://www.credly.com/badges/cc08c910-19b8-47a9-a869-72b4d916efad/public_url" target="_blank" rel="noopener noreferrer" aria-label="Verify (ISC)&sup2; Systems Security Certified Practitioner with Credly">
             <img class="cert-image" src="assets/certs/sscp.png" alt="(ISC)&sup2; SSCP badge" width="1455" height="1455" loading="lazy">
-            <h3 class="cert-title">(ISC)&sup2; SSCP</h3>
+            <p class="cert-vendor">(ISC)&sup2;</p>
+            <h3 class="cert-title">Systems Security Certified Practitioner</h3>
           </a>
           <span class="cert-badge-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -446,7 +455,8 @@
         <article class="cert-card">
           <a class="cert-badge-trigger" href="https://www.credly.com/badges/9aef0cdb-99f6-4562-ba2a-3d0114cf7c8e/public_url" target="_blank" rel="noopener noreferrer" aria-label="Verify CompTIA Network+ with Credly">
             <img class="cert-image" src="assets/certs/network-plus.png" alt="CompTIA Network+ badge" width="601" height="601" loading="lazy">
-            <h3 class="cert-title">CompTIA Network+</h3>
+            <p class="cert-vendor">CompTIA</p>
+            <h3 class="cert-title">Network+</h3>
           </a>
           <span class="cert-badge-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -459,6 +469,7 @@
         <article class="cert-card">
           <a class="cert-badge-trigger" href="https://www.credly.com/badges/c2b9890b-b2dd-4b77-a0ef-93bc54e045b1/public_url" target="_blank" rel="noopener noreferrer" aria-label="Verify Linux Essentials with Credly">
             <img class="cert-image" src="assets/certs/linux-essentials.png" alt="Linux Essentials badge" width="1632" height="1632" loading="lazy">
+            <p class="cert-vendor">Linux Professional Institute</p>
             <h3 class="cert-title">Linux Essentials</h3>
           </a>
           <span class="cert-badge-icon" aria-hidden="true">
@@ -472,7 +483,8 @@
         <article class="cert-card">
           <a class="cert-badge-trigger" href="https://www.credly.com/badges/69339a74-4fec-4239-bc6e-648e1ce88b1d/public_url" target="_blank" rel="noopener noreferrer" aria-label="Verify CompTIA Cloud+ with Credly">
             <img class="cert-image" src="assets/certs/cloud-plus.png" alt="CompTIA Cloud+ badge" width="600" height="600" loading="lazy">
-            <h3 class="cert-title">CompTIA Cloud+</h3>
+            <p class="cert-vendor">CompTIA</p>
+            <h3 class="cert-title">Cloud+</h3>
           </a>
           <span class="cert-badge-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -485,7 +497,8 @@
         <article class="cert-card" hidden>
           <a class="cert-badge-trigger" href="https://www.credly.com/badges/6afecd0d-25e5-4164-bf71-714467b96241/public_url" target="_blank" rel="noopener noreferrer" aria-label="Verify AWS Certified Cloud Practitioner with Credly">
             <img class="cert-image" src="assets/certs/aws-ccp.png" alt="AWS Certified Cloud Practitioner badge" width="1654" height="1654" loading="lazy">
-            <h3 class="cert-title">AWS Certified Cloud Practitioner</h3>
+            <p class="cert-vendor">AWS</p>
+            <h3 class="cert-title">Certified Cloud Practitioner</h3>
           </a>
           <span class="cert-badge-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
