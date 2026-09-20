@@ -80,8 +80,8 @@ content must stay sanitized:
     earth-toned, per the owner's own call at the time — but that was
     revisited once they saw it rendered: it's now a warm muted
     brown/taupe in both themes (`#7d6f56` light, `#a89880` dark) so the
-    subtitle/secondary text (`.tagline`, `.project-meta`, `.cert-verify`,
-    etc. — anything using this token) matches the rest of the brown palette
+    subtitle/secondary text (`.tagline`, `.project-meta`, etc. — anything
+    using this token) matches the rest of the brown palette
     instead of standing out as leftover gray. Both new values were checked
     against their `--bg` for ~4.5:1+ contrast, same bar as the primary
     palette. **All `.nav-links a` (not just `.is-active`) use
@@ -256,14 +256,77 @@ content must stay sanitized:
   that changed) at `assets/certs/<kebab-case-name>.png`, `.cert-image` is
   `aspect-ratio: 1 / 1` with `object-fit: contain` (the badge artwork is
   already square, `contain` avoids ever cropping a logo the way `cover`
-  would), a title, and a "Verify with Credly" link (omitted for credentials
-  with no Credly badge, e.g. the degree). To add a new one: drop the badge
-  PNG in that folder and add a matching card — no JSON manifest or build
-  step, consistent with how Projects are hand-authored.
+  would), and a title. To add a new one: drop the badge PNG in that folder
+  and add a matching card — no JSON manifest or build step, consistent with
+  how Projects are hand-authored.
   **`.certs-grid` has its own responsive pattern, not shared with
   `.projects-grid`/`.skills-grid`** — 2-col mobile / 3-col at 768px (versus
   1-col/2-col for the other two grids), since square badges read better
   smaller and more-per-row than the wide project cards.
+  **The Credly verify link is the badge itself, not a visible line of
+  text** — the old `.cert-verify` paragraph ("Verify with [Credly]")
+  sitting under the title is gone. `.cert-badge-trigger` is a real `<a
+  href="https://credly.com/...">` wrapped around the `<img>` (not a
+  `<button>` revealing something else) — a tap or click just navigates,
+  identically to the header's LinkedIn icon link, so touch visitors need
+  no JS at all for the core interaction. Two separate affordances layer
+  on top of that real link, one for each input type:
+  - **`.cert-badge-icon`**, a small always-visible circular "external
+    link" glyph in the badge's corner (own inline SVG, generic
+    open/arrow-out-of-box shape, not a brand asset — same
+    hand-drawn-free approach as the header's LinkedIn icon). This is the
+    part that answers "how does a mobile visitor know the badge is
+    tappable" — it never depends on hover/focus state, so it's exactly
+    as visible on a phone as on desktop. Purely decorative
+    (`aria-hidden`, `pointer-events: none`) since the whole badge is
+    already the link; it dims to `--text-muted` normally and brightens
+    to `--accent` on hover under `(hover: hover)`.
+  - **`.cert-verify-flyout`**, a `"Verify with Credly"` tooltip that
+    only exists for mouse users. It's a plain `aria-hidden` `<span>`
+    now, not a link (nesting an `<a>` inside `.cert-badge-trigger` would
+    be invalid HTML) — its job is purely to label what the badge does on
+    hover, not to be interacted with itself. The "Certification badge
+    tooltips" IIFE in `js/main.js` shows it on `mouseenter` and hides it
+    on `mouseleave` with no grace-period delay (unlike the header mail
+    flyout, there's no gap to cross into since this tooltip isn't
+    something you move the mouse into — clicking anywhere on the badge,
+    tooltip included conceptually, hits the underlying link), and
+    repositions it on every `mousemove` via a `.is-following` class that
+    switches it to `position: fixed` so inline `left`/`top` pixel values
+    track the raw cursor coordinates, clamped 8px from the viewport
+    edges the same way the mail flyout clamps horizontally. **It also
+    closes on `scroll`/`touchmove`**, same as the mail flyout, but for a
+    different reason: since it tracks the cursor rather than the badge,
+    scrolling with the mouse held still would otherwise leave it planted
+    at the last cursor position while the badge it's labeling moves out
+    from under it. Closing beats re-anchoring it, since once the page has
+    moved there's no meaningful cursor-to-badge relationship left to
+    preserve. This whole IIFE bails out immediately on touch
+    (`matchMedia('(hover: hover)')` false) — there's no cursor to track,
+    and `.cert-badge-icon` is
+    already the affordance there, so no tap-to-toggle fallback is
+    needed the way the mail flyout has one. The one thing that *does*
+    run regardless of hover capability: blurring the trigger after a
+    genuine click (`event.detail !== 0`, same check as the mail
+    trigger), since these links open `target="_blank"` and a lingering
+    focus on the original tab's trigger would otherwise leave
+    `:focus-within` holding the tooltip open if the visitor switches
+    back to this tab. `:focus-within` is also the fallback for keyboard
+    users tabbing to the link — no cursor position to track there, so it
+    shows the flyout at its CSS default position (centered under the
+    badge) rather than following anything.
+  **`.cert-card` lost its `overflow: hidden`** to make room for this —
+  the badge image is inset from the card's edges by its own 1rem padding
+  and the PNGs are transparent right up to that inset, so the clip was
+  never visually doing anything; keeping it would have clipped the
+  flyout/icon on narrow (2-col mobile) cards. To add a cert with no
+  Credly badge (e.g. the degree): skip `.cert-verify-control` entirely
+  and use a bare `<img class="cert-image">`, same as before. The print
+  stylesheet hides both `.cert-verify-flyout` and `.cert-badge-icon`
+  outright (same as `.mail-flyout`) rather than forcing them into static
+  flow — `.cert-badge-trigger` is a real `main a[href^="http"]` now, so
+  the existing generic print rule already appends its Credly URL after
+  it with no special-casing needed.
 - **Favicon/touch-icon are raster, not the originally-planned SVG monogram.**
   Source is a hand-drawn transparent PNG from the owner (originally a
   squinting face + a separate heart, spread across a tall canvas). Final mark
@@ -630,8 +693,9 @@ treatment.
 </details>
 
 The **UMGC degree card is removed for now** — the owner doesn't have that
-credential's file ready yet. Re-add it the same way: a `cert-card` with an
-image, `<h3>`, and no `.cert-verify` (degrees don't have Credly badges).
+credential's file ready yet. Re-add it the same way: a `cert-card` with a
+bare `<img class="cert-image">` (no `.cert-verify-control` wrapper/flyout,
+since degrees don't have Credly badges) and an `<h3>`.
 
 The "Verify with Credly" links are **real** — extracted from the hyperlink
 annotations in `assets/Cesar Vaca Resume.pdf` (the visible cert names in that

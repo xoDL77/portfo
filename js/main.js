@@ -515,6 +515,106 @@
 
 
 /* ============================================================
+   Certification badge tooltips
+   The badge itself is a real <a> now (see the HTML comment above
+   .certs-grid in index.html), so touch just navigates on tap with no JS
+   involved — .cert-badge-icon in the CSS is the tap affordance there.
+   This only handles the desktop extra: a "Verify with Credly" tooltip
+   that tracks the cursor and is visible only between mouseenter and
+   mouseleave, no grace period — unlike the mail flyout above, there's no
+   gap to cross into, since the tooltip is purely a label, not something
+   you move the mouse into and interact with.
+   ============================================================ */
+
+(function () {
+  var controls = document.querySelectorAll('.cert-verify-control');
+  if (!controls.length) return;
+
+  // Blurring after a genuine click prevents :focus-within from leaving the
+  // flyout visibly stuck open once the badge's real link has navigated
+  // away — target="_blank" keeps this tab's focus on the trigger even
+  // though the click opened a new tab, so without this, switching back to
+  // this tab later would show the tooltip parked open on whichever badge
+  // was last clicked. Same event.detail check as the mail trigger above:
+  // only a genuine click has detail !== 0, so keyboard activation (Enter/
+  // Space, detail === 0) is left alone and still opens the flyout normally
+  // via :focus-within. This applies regardless of hover capability.
+  Array.prototype.forEach.call(controls, function (control) {
+    var trigger = control.querySelector('.cert-badge-trigger');
+    if (!trigger) return;
+    trigger.addEventListener('click', function (e) {
+      if (e.detail !== 0) trigger.blur();
+    });
+  });
+
+  // Nothing below this point applies on touch — there's no cursor to
+  // track, and the link already works without it.
+  if (!window.matchMedia('(hover: hover)').matches) return;
+
+  function positionAtCursor(flyout, x, y) {
+    var offset = 16;
+    var margin = 8;
+    var left = x + offset;
+    var top = y + offset;
+    if (left + flyout.offsetWidth > window.innerWidth - margin) {
+      left = x - flyout.offsetWidth - offset;
+    }
+    if (top + flyout.offsetHeight > window.innerHeight - margin) {
+      top = y - flyout.offsetHeight - offset;
+    }
+    flyout.style.left = left + 'px';
+    flyout.style.top = top + 'px';
+  }
+
+  // The tooltip tracks the raw cursor position (position: fixed), not the
+  // badge underneath it — scrolling moves the badge but not a stationary
+  // cursor, so without this the tooltip would stay planted mid-scroll,
+  // visibly drifting away from the badge it's meant to label. Closing it
+  // the moment scrolling starts is simpler than re-positioning it relative
+  // to a badge whose relationship to the cursor no longer means anything
+  // once the page has moved underneath. Tracked as pairs rather than
+  // re-querying the DOM so a scroll with several tooltips mid-fade (not
+  // possible today, one hover at a time, but cheap to keep correct) closes
+  // all of them.
+  var open = [];
+
+  function closeAll() {
+    for (var i = 0; i < open.length; i++) {
+      open[i].control.classList.remove('is-open', 'is-following');
+      open[i].flyout.style.left = '';
+      open[i].flyout.style.top = '';
+    }
+    open = [];
+  }
+
+  window.addEventListener('scroll', closeAll, { passive: true });
+  window.addEventListener('touchmove', closeAll, { passive: true });
+
+  Array.prototype.forEach.call(controls, function (control) {
+    var flyout = control.querySelector('.cert-verify-flyout');
+    if (!flyout) return;
+
+    control.addEventListener('mouseenter', function (e) {
+      control.classList.add('is-open', 'is-following');
+      positionAtCursor(flyout, e.clientX, e.clientY);
+      open.push({ control: control, flyout: flyout });
+    });
+
+    control.addEventListener('mousemove', function (e) {
+      positionAtCursor(flyout, e.clientX, e.clientY);
+    });
+
+    control.addEventListener('mouseleave', function () {
+      control.classList.remove('is-open', 'is-following');
+      flyout.style.left = '';
+      flyout.style.top = '';
+      open = open.filter(function (entry) { return entry.control !== control; });
+    });
+  });
+})();
+
+
+/* ============================================================
    Resume print button (resume.html only)
    Printing the outer page would print the site header/toolbar along
    with it; calling print() on the (same-origin) iframe's own window
