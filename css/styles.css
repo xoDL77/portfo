@@ -170,6 +170,21 @@ img, video { max-width: 100%; height: auto; }
   .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
 }
 
+/* The touch replacement for the hover above: a one-shot flash instead of a
+   sustained highlight, so tapping the header's mail/LinkedIn/theme-toggle
+   buttons still gives visual confirmation without the stuck-highlight bug
+   the hover rule was gated off to avoid. The "Header icon-btn tap flash"
+   IIFE in js/main.js adds .is-flash on click (touch devices only) and
+   removes it again on animationend; prefers-reduced-motion already
+   collapses this to near-instant via the global animation-duration
+   override further down, so no separate guard is needed here. */
+@keyframes icon-btn-flash {
+  from { border-color: var(--accent); color: var(--accent); }
+  to { border-color: var(--border); color: var(--text); }
+}
+
+.icon-btn.is-flash { animation: icon-btn-flash 0.35s ease-out; }
+
 .icon-btn .icon { width: 16px; height: 16px; }
 
 /* Shows what you'll switch away from, not what you're currently in --
@@ -430,7 +445,9 @@ main section p { text-align: justify; }
    clickable before anyone taps it. Purely decorative (aria-hidden,
    pointer-events: none) since the whole card is already the link. The
    adjacent-sibling selector below (+) relies on this span coming right
-   after the closing </a> in the markup. */
+   after the closing </a> in the markup. Square with the same 6px
+   border-radius as .icon-btn in the header (not a circle), so it reads as
+   the same family of control as the mail/LinkedIn/theme-toggle buttons. */
 .cert-badge-icon {
   position: absolute;
   right: 0.75rem;
@@ -442,7 +459,7 @@ main section p { text-align: justify; }
   justify-content: center;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 50%;
+  border-radius: 6px;
   color: var(--text-muted);
   pointer-events: none;
 }

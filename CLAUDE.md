@@ -1,13 +1,14 @@
 # Portfolio site — project context
 
 Personal cybersecurity portfolio for Cesar Vaca. Static site, no build step,
-no framework. Live at https://cesarspace.online/ (custom domain; DNS is set
-and the site resolves and serves correctly over **plain HTTP**, but **HTTPS
-is still broken as of 2026-09-18** — GitHub never issued the certificate,
-because the domain's Cloudflare DNS records were proxied. See roadmap step 5
-and the two Cloudflare/TLS gotchas at the bottom). The old
-`https://xodl77.github.io/portfo/` address still works as GitHub Pages'
-default URL for the repo.
+no framework. Live at https://cesarspace.online/ (custom domain; DNS is set,
+the certificate is issued, and **HTTPS is enforced as of 2026-09-20** — HTTP
+now 301-redirects to HTTPS. It was broken from launch until this date because
+the domain's Cloudflare DNS records were proxied, which blocked GitHub's
+certificate challenge; see roadmap step 5 and the Cloudflare/TLS gotchas at
+the bottom for the root cause and fix, kept for reference in case it
+regresses). The old `https://xodl77.github.io/portfo/` address still works
+as GitHub Pages' default URL for the repo.
 
 ## Hard constraints
 
@@ -283,15 +284,19 @@ content must stay sanitized:
   `.cert-verify-flyout`, both siblings of the `<a>` rather than descendants
   of it, can anchor themselves against the card's own box. Two separate
   affordances layer on top of that real link, one for each input type:
-  - **`.cert-badge-icon`**, a small always-visible circular arrow glyph
+  - **`.cert-badge-icon`**, a small always-visible square arrow glyph
     pinned to the card's bottom-right corner (own inline SVG — a plain
     diagonal line plus a two-segment polyline forming a simple
     arrow-up-right shape, deliberately simpler than an earlier version
     that drew a small box-with-corner-arrow "external link" glyph; not a
     brand asset either way, same hand-drawn-free approach as the header's
-    LinkedIn icon). This is the part that answers "how does a mobile
-    visitor know the card is tappable" — it never depends on hover/focus
-    state, so it's exactly as visible on a phone as on desktop. Purely
+    LinkedIn icon). It's square with the same 6px `border-radius` as the
+    header's `.icon-btn` (not a circle — that was tried first and the
+    owner asked for it to match the header controls instead), so it reads
+    as the same family of control as the mail/LinkedIn/theme-toggle
+    buttons. This is the part that answers "how does a mobile visitor
+    know the card is tappable" — it never depends on hover/focus state,
+    so it's exactly as visible on a phone as on desktop. Purely
     decorative (`aria-hidden`, `pointer-events: none`) since the whole
     card is already the link; it dims to `--text-muted` normally and
     brightens to `--accent` on hover via the adjacent-sibling selector
@@ -421,9 +426,30 @@ content must stay sanitized:
     scroll — touch browsers apply `:hover` styles on tap and only clear
     them on the next scroll/repaint, since there's no real pointer to
     un-hover with. Gating on `(hover: hover)` means only devices with an
-    actual pointer (mouse/trackpad) ever get that highlight; a tap now
-    just performs the button's action (theme swap, flyout open, etc.)
-    with no lingering highlight, closer to a normal "button press" flash.
+    actual pointer (mouse/trackpad) ever get that highlight.
+    **Touch devices get a deliberate one-shot flash instead, not no
+    feedback at all** — the owner asked for the highlight back on mobile
+    specifically, just without the stuck-until-scroll bug. The "Header
+    icon-btn tap flash" IIFE in `js/main.js` adds `.is-flash` on `click`
+    (only when `matchMedia('(hover: hover)')` is false, so this never
+    doubles up with the real `:hover` on a device that has both) to
+    exactly three buttons — `#mail-trigger`, the LinkedIn link, and
+    `#theme-toggle` — not every `.icon-btn` on the page (the copy-email
+    button inside the mail flyout is deliberately excluded, since it
+    wasn't one of the three the owner named). `.icon-btn.is-flash` in
+    `css/styles.css` runs a 0.35s `@keyframes` animation from the same
+    accent border/icon color the hover rule uses back down to normal,
+    and the JS removes the class again on `animationend` — a real CSS
+    animation with a fixed, guaranteed end, not a state that depends on
+    the pointer being physically down (which for a fast tap could be too
+    brief to register as a visible "flash" at all) or on scroll to clear
+    it. A tap while a flash is already mid-animation removes the class,
+    forces a reflow (`void btn.offsetWidth`), then re-adds it — without
+    that, re-adding a class that's already present doesn't restart a CSS
+    animation, so a rapid second tap would silently do nothing. This
+    piggybacks on the site's existing global `prefers-reduced-motion`
+    rule (further down in `css/styles.css`, `animation-duration: 0.01ms
+    !important`) for free — no separate reduced-motion guard needed here.
     The mail flyout's own persistence is unaffected and still intentional
     — that comes from `:focus-within` on `.mail-control`, a separate
     mechanism from this hover rule.
@@ -527,6 +553,27 @@ content must stay sanitized:
     Moving the mouse away earlier still closes it sooner via the normal
     hover-out grace-period timer (see above) — that's independent and fine,
     this only governs the case where the visitor stays put.
+  - **The copy button has an `execCommand('copy')` fallback for when
+    `navigator.clipboard` is unavailable** — that API only exists in a
+    secure context (HTTPS or localhost). Found 2026-09-20 while testing
+    the mobile tap-flash feature below against the live site: at the time,
+    this site's custom domain only served over plain HTTP (HTTPS was
+    still broken — see roadmap step 5 and the Cloudflare/TLS gotcha at the
+    bottom), so `navigator.clipboard` was `undefined` there and
+    `.writeText()` threw before ever reaching `.then()` — the button
+    visibly did nothing: no checkmark, nothing on the clipboard, silently
+    swallowed by the existing `try/catch`. HTTPS is enforced now (fixed
+    the same day), so `navigator.clipboard` is reliably present on the
+    live site going forward and this fallback isn't load-bearing there
+    any more — but it's kept anyway, since it's what makes the button work
+    testing locally over plain `http://` (e.g. Python's `http.server`,
+    same as the `404.html`/`resume.html` Live Server gotchas below) and
+    it's a harmless safety net if HTTPS ever regresses. The fallback
+    creates a hidden, off-screen `<textarea>`, selects its content, and
+    calls `document.execCommand('copy')` — an older API but one that
+    works without a secure context. `showCopied()` only fires on an
+    actual successful copy in both paths, real or fallback, so the
+    checkmark still means what it says.
   - `.mail-flyout` is hidden outright in print (`display: none`) rather than
     left to `opacity: 0`, since a print stylesheet has no hover state and an
     invisible-but-present flyout would otherwise print as blank space. Only
@@ -816,37 +863,40 @@ Record, sanitize, encode per the Media section above. Add one to the strongest
 project first and confirm hover-play works on desktop and tap-to-toggle on a
 real phone before batching the rest.
 
-### 5. ~~Custom domain~~ — mostly done
+### 5. ~~Custom domain~~ — done
 
 `CNAME` (`cesarspace.online`) is in the repo root, DNS A records point at
 GitHub Pages, and the site resolves there now. `404.html`'s absolute paths
 and `index.html`'s canonical/OG URLs are updated to the new root (`/` instead
-of `/portfo/`). Still outstanding: **HTTPS does not work at all yet.**
-`https://cesarspace.online/` fails TLS outright — `curl: (60) SSL: no
-alternative certificate subject name matches target host name
-'cesarspace.online'`, HTTP status `000`, no response body — because GitHub
-Pages never issued a certificate for the custom domain and is serving one
-that doesn't cover it. Plain HTTP serves the site correctly in the meantime,
-which is what masks the problem in a browser.
+of `/portfo/`). **HTTPS is issued and enforced as of 2026-09-20** — plain
+`http://cesarspace.online/` now 301-redirects to `https://`, and the cert
+covers the custom domain correctly (`strict-transport-security` header
+present, no TLS errors).
 
-Root cause, found 2026-09-18: the domain's DNS is hosted at Cloudflare and
-its records were **proxied** (orange cloud), which prevents GitHub's
-certificate challenge from completing. The fix is to set every record for the
-site — the apex `A` records pointing at GitHub's Pages IPs and the `www`
-`CNAME` — to **DNS only** (grey cloud), then wait for the cert to issue. The
-challenge itself runs over plain HTTP, which already works, so nothing else
-blocks issuance once the records are unproxied. If the cert still hasn't
-appeared after an hour or so, remove the custom domain in Settings → Pages,
-save, re-add it, and save — that re-triggers issuance. Once it's issued,
-check "Enforce HTTPS" (it can silently stay unchecked after issuance and
-needs a manual click). Verify with:
+For reference, in case this ever regresses: the site launched with HTTPS
+completely broken (`https://cesarspace.online/` failed TLS outright —
+`curl: (60) SSL: no alternative certificate subject name matches target host
+name 'cesarspace.online'`, HTTP status `000`, no response body — because
+GitHub Pages had never issued a certificate for the custom domain). Root
+cause, found 2026-09-18: the domain's DNS is hosted at Cloudflare and its
+records were **proxied** (orange cloud), which prevents GitHub's certificate
+challenge from completing. The fix was to set every record for the site —
+the apex `A` records pointing at GitHub's Pages IPs and the `www` `CNAME` —
+to **DNS only** (grey cloud), wait for the cert to issue (the challenge runs
+over plain HTTP, which already worked, so nothing else was blocking
+issuance once the records were unproxied), then check "Enforce HTTPS" in
+Settings → Pages (it can silently stay unchecked after issuance and needs a
+manual click — this is the step that adds the HTTP→HTTPS redirect). If the
+cert still hasn't appeared after an hour or so of DNS-only records, removing
+the custom domain in Settings → Pages, saving, re-adding it, and saving
+again re-triggers issuance. Verify with:
 
 ```
 curl -sS -o /dev/null -w '%{http_code} %{content_type}\n' https://cesarspace.online/assets/img/og-image.png
 ```
 
 `200 image/png` means it's fixed; `000` plus a `curl: (60)` error means the
-cert still isn't there.
+cert isn't there.
 
 ### 6. Pre-launch check
 
@@ -868,24 +918,30 @@ shouldn't be public.
   issuance.** If the domain's DNS lives at Cloudflare, every record for the
   site has to be **DNS only** (grey cloud) or GitHub's certificate challenge
   never completes and no cert is ever issued. This is why HTTPS was broken
-  here — see roadmap step 5 for the full fix and the verification command.
+  here from launch until 2026-09-20 — see roadmap step 5 for the full fix
+  and the verification command. **Resolved now** (cert issued, HTTPS
+  enforced), but if the DNS records ever get re-proxied (e.g. someone
+  toggles Cloudflare's orange cloud back on for CDN/DDoS features), this
+  exact failure mode will return — check that first before re-diagnosing
+  from scratch.
 - **A missing HTTPS certificate makes link previews show a random cert badge
   instead of the OG image** — and it looks exactly like someone changed
-  `og:image`, which is the trap. Symptom: sharing the site in iMessage (or
-  anything else that unfurls links) produces a card with the correct title
-  and domain but a CompTIA badge as the picture. The cause is that
-  `og:image` is an **absolute `https://` URL** while every `<img>` on the
-  page uses a **relative** path: with the cert broken, a crawler fetches the
-  page fine over HTTP (so the title comes through), fails TLS on the absolute
-  OG image URL, gets nothing, and falls back to scraping the page's own
+  `og:image`, which is the trap. This was an active problem here before the
+  cert issued (see above); kept for reference in case HTTPS ever breaks
+  again. Symptom: sharing the site in iMessage (or anything else that
+  unfurls links) produces a card with the correct title and domain but a
+  CompTIA badge as the picture. The cause is that `og:image` is an
+  **absolute `https://` URL** while every `<img>` on the page uses a
+  **relative** path: with the cert broken, a crawler fetches the page fine
+  over HTTP (so the title comes through), fails TLS on the absolute OG
+  image URL, gets nothing, and falls back to scraping the page's own
   images — which resolve against `http://` and load fine — landing on
   whichever cert badge its heuristics like. Every device shows the same
   thing, so it reads as a server-side change rather than a cache, and chasing
   it as a caching bug wastes a lot of time. **Don't "fix" this in the
   markup** — don't edit `og:image`, don't make it relative, don't repoint it
-  at the `github.io` host. The tag is correct and the image really is there
-  (it loads over plain HTTP). Fix the certificate and the card comes back on
-  its own.
+  at the `github.io` host. The tag is correct; if this recurs, fix the
+  certificate and the card comes back on its own.
 - **`curl -s` hides TLS errors.** `curl -sI https://…` against a host with a
   bad cert prints *absolutely nothing* and returns you to the prompt, which
   reads like a network or DNS problem instead of a certificate one. Use
