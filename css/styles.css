@@ -390,7 +390,6 @@ main section p { text-align: justify; }
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--surface);
-  overflow: hidden;
 }
 
 .cert-image {
@@ -404,14 +403,99 @@ main section p { text-align: justify; }
 
 .cert-title {
   font-size: 1.05rem;
-  margin: 0.75rem 1rem 0.25rem;
+  margin: 0.75rem 1rem 1rem;
 }
 
-.cert-verify {
-  margin: 0 1rem 1rem;
-  font-size: 0.9rem;
-  font-style: italic;
+/* The badge itself is the Credly link now (see the HTML comment above
+   .certs-grid): .cert-badge-trigger is a real <a> around the image, so a
+   tap/click just navigates -- no JS needed for that part, and it works
+   identically on touch. .cert-card lost its overflow: hidden here -- the
+   badge img is inset by its own 1rem padding and paints nothing in its
+   box's own corners (the PNGs are transparent there), so the clip was
+   never visually doing anything, and keeping it would have clipped the
+   flyout/icon on narrow cards. */
+.cert-verify-control { position: relative; }
+
+.cert-badge-trigger {
+  display: block;
+  position: relative;
+  text-decoration: none;
+}
+
+/* Always-visible tap/click affordance -- unlike the flyout below, this
+   isn't gated behind hover, since touch visitors have no hover state to
+   reveal it with. A small "external link" glyph in the corner of every
+   badge signals it's clickable before anyone taps it. Purely decorative
+   (aria-hidden, pointer-events: none) since the whole badge is already
+   the link. */
+.cert-badge-icon {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
   color: var(--text-muted);
+  pointer-events: none;
+}
+
+.cert-badge-icon svg { width: 14px; height: 14px; }
+
+@media (hover: hover) {
+  .cert-badge-trigger:hover .cert-badge-icon {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+}
+
+/* A decorative, non-interactive tooltip -- js/main.js fades it in between
+   mouseenter/mouseleave on .cert-verify-control and repositions it on every
+   mousemove to track the cursor (see the "Certification badge tooltips"
+   IIFE), rather than sitting fixed under the badge like the header's mail
+   flyout does. Mouse-only: it's skipped entirely on touch, where the badge
+   link just navigates on tap and .cert-badge-icon above is the affordance
+   instead. The default position here (centered under the badge) is what
+   :focus-within falls back to for keyboard users tabbing to the link, since
+   there's no cursor position to track in that case. */
+.cert-verify-flyout {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  color: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s ease;
+  z-index: 60;
+}
+
+.cert-verify-control.is-open .cert-verify-flyout,
+.cert-verify-control:focus-within .cert-verify-flyout {
+  opacity: 1;
+}
+
+/* Added by JS only while actively tracking the mouse -- switches the
+   flyout to viewport-relative coordinates so the left/top pixel values
+   js/main.js sets on mousemove position it at the cursor instead of
+   relative to .cert-verify-control. transform: none cancels the default
+   rule's translateX(-50%), which would otherwise offset it half its own
+   width off the cursor position. */
+.cert-verify-control.is-following .cert-verify-flyout {
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: none;
 }
 
 .copy-email-btn .icon {
@@ -638,6 +722,8 @@ main section p { text-align: justify; }
   .nav-links,
   .theme-toggle,
   .mail-flyout,
+  .cert-verify-flyout,
+  .cert-badge-icon,
   .hero-actions,
   .demo,
   .back-to-top,
