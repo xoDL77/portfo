@@ -263,18 +263,31 @@ content must stay sanitized:
   **The vendor and cert name are two separate elements, not one combined
   heading** — `.cert-vendor` (e.g. "CompTIA", "(ISC)²", "AWS", "Linux
   Professional Institute") is its own `<p>` above `.cert-title` (e.g.
-  "PenTest+", "SSCP", "Certified Cloud Practitioner", "Linux Essentials"),
-  where `.cert-title` used to hold the whole combined name by itself (e.g.
-  "CompTIA PenTest+") before the owner asked for the vendor split out and
-  visually de-emphasized. `.cert-vendor` intentionally reuses
-  `.project-desc-toggle`'s exact `color: var(--text-muted)` and
-  `font-size: 0.85rem` (the "read more" text under a project description)
-  since the owner pointed to that as the look they wanted — but without
-  its `font-style: italic`, since `.cert-vendor` is a plain label, not a
-  toggle control. Splitting the vendor out doesn't change which text is
-  in `aria-label`/alt text elsewhere (those still spell out the full
-  credential name, e.g. `aria-label="Verify CompTIA PenTest+ with
-  Credly"`) — only the on-card heading changed.
+  "PenTest+", "Systems Security Certified Practitioner", "Certified Cloud
+  Practitioner", "Linux Essentials"), where `.cert-title` used to hold the
+  whole combined name by itself (e.g. "CompTIA PenTest+") before the
+  owner asked for the vendor split out and visually de-emphasized.
+  `.cert-vendor` intentionally reuses `.project-desc-toggle`'s exact
+  `color: var(--text-muted)` and `font-size: 0.85rem` (the "read more"
+  text under a project description) since the owner pointed to that as
+  the look they wanted — but without its `font-style: italic`, since
+  `.cert-vendor` is a plain label, not a toggle control. Splitting the
+  vendor out doesn't itself change what's in `aria-label`/alt text
+  elsewhere (those still spell out the full credential name, e.g.
+  `aria-label="Verify CompTIA PenTest+ with Credly"`) — only the on-card
+  heading changed. **`.cert-title` for the (ISC)² cert spells out
+  "Systems Security Certified Practitioner" rather than the "SSCP"
+  acronym** — a separate, later request, consistent with the AWS card
+  already spelling out "Certified Cloud Practitioner" instead of "CCP".
+  Its `aria-label` was updated to match (`"Verify (ISC)² Systems
+  Security Certified Practitioner with Credly"`), but `.cert-image`'s
+  `alt` text still says "(ISC)² SSCP badge" — alt text describes what's
+  visually on the badge artwork itself, which really does render "SSCP"
+  as its main text, so that one wasn't changed. The longer title wraps to
+  2–3 lines depending on viewport width, which stretches that whole grid
+  row to match (CSS Grid's default `align-items: stretch`) — the
+  shorter cards next to it just get extra bottom whitespace instead of
+  misaligning; no card-height rule needed to handle this.
   **`.certs-grid` has its own responsive pattern, not shared with
   `.projects-grid`/`.skills-grid`** — 2-col mobile / 3-col at 768px (versus
   1-col/2-col for the other two grids), since square badges read better
