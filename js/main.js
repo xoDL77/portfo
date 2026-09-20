@@ -516,7 +516,7 @@
 
 /* ============================================================
    Certification badge tooltips
-   The badge itself is a real <a> now (see the HTML comment above
+   The whole card is a real <a> now (see the HTML comment above
    .certs-grid in index.html), so touch just navigates on tap with no JS
    involved — .cert-badge-icon in the CSS is the tap affordance there.
    This only handles the desktop extra: a "Verify with Credly" tooltip
@@ -527,20 +527,20 @@
    ============================================================ */
 
 (function () {
-  var controls = document.querySelectorAll('.cert-verify-control');
-  if (!controls.length) return;
+  var cards = document.querySelectorAll('.cert-card');
+  if (!cards.length) return;
 
   // Blurring after a genuine click prevents :focus-within from leaving the
-  // flyout visibly stuck open once the badge's real link has navigated
+  // flyout visibly stuck open once the card's real link has navigated
   // away — target="_blank" keeps this tab's focus on the trigger even
   // though the click opened a new tab, so without this, switching back to
-  // this tab later would show the tooltip parked open on whichever badge
+  // this tab later would show the tooltip parked open on whichever card
   // was last clicked. Same event.detail check as the mail trigger above:
   // only a genuine click has detail !== 0, so keyboard activation (Enter/
   // Space, detail === 0) is left alone and still opens the flyout normally
   // via :focus-within. This applies regardless of hover capability.
-  Array.prototype.forEach.call(controls, function (control) {
-    var trigger = control.querySelector('.cert-badge-trigger');
+  Array.prototype.forEach.call(cards, function (card) {
+    var trigger = card.querySelector('.cert-badge-trigger');
     if (!trigger) return;
     trigger.addEventListener('click', function (e) {
       if (e.detail !== 0) trigger.blur();
@@ -567,11 +567,11 @@
   }
 
   // The tooltip tracks the raw cursor position (position: fixed), not the
-  // badge underneath it — scrolling moves the badge but not a stationary
+  // card underneath it — scrolling moves the card but not a stationary
   // cursor, so without this the tooltip would stay planted mid-scroll,
-  // visibly drifting away from the badge it's meant to label. Closing it
+  // visibly drifting away from the card it's meant to label. Closing it
   // the moment scrolling starts is simpler than re-positioning it relative
-  // to a badge whose relationship to the cursor no longer means anything
+  // to a card whose relationship to the cursor no longer means anything
   // once the page has moved underneath. Tracked as pairs rather than
   // re-querying the DOM so a scroll with several tooltips mid-fade (not
   // possible today, one hover at a time, but cheap to keep correct) closes
@@ -580,7 +580,7 @@
 
   function closeAll() {
     for (var i = 0; i < open.length; i++) {
-      open[i].control.classList.remove('is-open', 'is-following');
+      open[i].card.classList.remove('is-open', 'is-following');
       open[i].flyout.style.left = '';
       open[i].flyout.style.top = '';
     }
@@ -590,25 +590,25 @@
   window.addEventListener('scroll', closeAll, { passive: true });
   window.addEventListener('touchmove', closeAll, { passive: true });
 
-  Array.prototype.forEach.call(controls, function (control) {
-    var flyout = control.querySelector('.cert-verify-flyout');
+  Array.prototype.forEach.call(cards, function (card) {
+    var flyout = card.querySelector('.cert-verify-flyout');
     if (!flyout) return;
 
-    control.addEventListener('mouseenter', function (e) {
-      control.classList.add('is-open', 'is-following');
+    card.addEventListener('mouseenter', function (e) {
+      card.classList.add('is-open', 'is-following');
       positionAtCursor(flyout, e.clientX, e.clientY);
-      open.push({ control: control, flyout: flyout });
+      open.push({ card: card, flyout: flyout });
     });
 
-    control.addEventListener('mousemove', function (e) {
+    card.addEventListener('mousemove', function (e) {
       positionAtCursor(flyout, e.clientX, e.clientY);
     });
 
-    control.addEventListener('mouseleave', function () {
-      control.classList.remove('is-open', 'is-following');
+    card.addEventListener('mouseleave', function () {
+      card.classList.remove('is-open', 'is-following');
       flyout.style.left = '';
       flyout.style.top = '';
-      open = open.filter(function (entry) { return entry.control !== control; });
+      open = open.filter(function (entry) { return entry.card !== card; });
     });
   });
 })();

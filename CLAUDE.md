@@ -263,66 +263,84 @@ content must stay sanitized:
   `.projects-grid`/`.skills-grid`** — 2-col mobile / 3-col at 768px (versus
   1-col/2-col for the other two grids), since square badges read better
   smaller and more-per-row than the wide project cards.
-  **The Credly verify link is the badge itself, not a visible line of
+  **The Credly verify link is the whole card, not a visible line of
   text** — the old `.cert-verify` paragraph ("Verify with [Credly]")
-  sitting under the title is gone. `.cert-badge-trigger` is a real `<a
-  href="https://credly.com/...">` wrapped around the `<img>` (not a
-  `<button>` revealing something else) — a tap or click just navigates,
-  identically to the header's LinkedIn icon link, so touch visitors need
-  no JS at all for the core interaction. Two separate affordances layer
-  on top of that real link, one for each input type:
-  - **`.cert-badge-icon`**, a small always-visible circular "external
-    link" glyph in the badge's corner (own inline SVG, generic
-    open/arrow-out-of-box shape, not a brand asset — same
-    hand-drawn-free approach as the header's LinkedIn icon). This is the
-    part that answers "how does a mobile visitor know the badge is
-    tappable" — it never depends on hover/focus state, so it's exactly
-    as visible on a phone as on desktop. Purely decorative
-    (`aria-hidden`, `pointer-events: none`) since the whole badge is
-    already the link; it dims to `--text-muted` normally and brightens
-    to `--accent` on hover under `(hover: hover)`.
+  sitting under the title is gone, and this went through two designs
+  since: first just the badge image was the link, then the owner asked
+  for the title to be clickable too, so `.cert-badge-trigger` (a real
+  `<a href="https://credly.com/...">`, not a `<button>` revealing
+  something else) now wraps **both** the `<img>` and the `<h3
+  class="cert-title">`, as siblings inside it — a tap or click anywhere
+  on the card's image or title navigates, identically to the header's
+  LinkedIn icon link, so touch visitors need no JS at all for the core
+  interaction. `.cert-badge-trigger` sets `color: inherit` so the title
+  text doesn't pick up the default `a { color: var(--accent) }` link
+  color just from being nested inside the anchor — it still reads as a
+  normal heading. `.cert-card` itself (not a separate `.cert-verify-control`
+  wrapper div — there used to be one, but once the whole card became the
+  link there was no reason to keep a redundant nested `position: relative`
+  container) carries `position: relative` so `.cert-badge-icon` and
+  `.cert-verify-flyout`, both siblings of the `<a>` rather than descendants
+  of it, can anchor themselves against the card's own box. Two separate
+  affordances layer on top of that real link, one for each input type:
+  - **`.cert-badge-icon`**, a small always-visible circular arrow glyph
+    pinned to the card's bottom-right corner (own inline SVG — a plain
+    diagonal line plus a two-segment polyline forming a simple
+    arrow-up-right shape, deliberately simpler than an earlier version
+    that drew a small box-with-corner-arrow "external link" glyph; not a
+    brand asset either way, same hand-drawn-free approach as the header's
+    LinkedIn icon). This is the part that answers "how does a mobile
+    visitor know the card is tappable" — it never depends on hover/focus
+    state, so it's exactly as visible on a phone as on desktop. Purely
+    decorative (`aria-hidden`, `pointer-events: none`) since the whole
+    card is already the link; it dims to `--text-muted` normally and
+    brightens to `--accent` on hover via the adjacent-sibling selector
+    `.cert-badge-trigger:hover + .cert-badge-icon` under `(hover: hover)`
+    — this relies on `.cert-badge-icon` being the `<a>`'s very next
+    element sibling in the markup, so keep them adjacent if this ever
+    gets reordered.
   - **`.cert-verify-flyout`**, a `"Verify with Credly"` tooltip that
-    only exists for mouse users. It's a plain `aria-hidden` `<span>`
-    now, not a link (nesting an `<a>` inside `.cert-badge-trigger` would
-    be invalid HTML) — its job is purely to label what the badge does on
+    only exists for mouse users. It's a plain `aria-hidden` `<span>`,
+    not a link (nesting an `<a>` inside `.cert-badge-trigger` would be
+    invalid HTML) — its job is purely to label what the card does on
     hover, not to be interacted with itself. The "Certification badge
     tooltips" IIFE in `js/main.js` shows it on `mouseenter` and hides it
     on `mouseleave` with no grace-period delay (unlike the header mail
     flyout, there's no gap to cross into since this tooltip isn't
-    something you move the mouse into — clicking anywhere on the badge,
+    something you move the mouse into — clicking anywhere on the card,
     tooltip included conceptually, hits the underlying link), and
     repositions it on every `mousemove` via a `.is-following` class that
     switches it to `position: fixed` so inline `left`/`top` pixel values
     track the raw cursor coordinates, clamped 8px from the viewport
     edges the same way the mail flyout clamps horizontally. **It also
     closes on `scroll`/`touchmove`**, same as the mail flyout, but for a
-    different reason: since it tracks the cursor rather than the badge,
+    different reason: since it tracks the cursor rather than the card,
     scrolling with the mouse held still would otherwise leave it planted
-    at the last cursor position while the badge it's labeling moves out
+    at the last cursor position while the card it's labeling moves out
     from under it. Closing beats re-anchoring it, since once the page has
-    moved there's no meaningful cursor-to-badge relationship left to
+    moved there's no meaningful cursor-to-card relationship left to
     preserve. This whole IIFE bails out immediately on touch
     (`matchMedia('(hover: hover)')` false) — there's no cursor to track,
-    and `.cert-badge-icon` is
-    already the affordance there, so no tap-to-toggle fallback is
-    needed the way the mail flyout has one. The one thing that *does*
-    run regardless of hover capability: blurring the trigger after a
-    genuine click (`event.detail !== 0`, same check as the mail
-    trigger), since these links open `target="_blank"` and a lingering
-    focus on the original tab's trigger would otherwise leave
+    and `.cert-badge-icon` is already the affordance there, so no
+    tap-to-toggle fallback is needed the way the mail flyout has one. The
+    one thing that *does* run regardless of hover capability: blurring
+    the trigger after a genuine click (`event.detail !== 0`, same check
+    as the mail trigger), since these links open `target="_blank"` and a
+    lingering focus on the original tab's trigger would otherwise leave
     `:focus-within` holding the tooltip open if the visitor switches
     back to this tab. `:focus-within` is also the fallback for keyboard
     users tabbing to the link — no cursor position to track there, so it
     shows the flyout at its CSS default position (centered under the
-    badge) rather than following anything.
+    card) rather than following anything.
   **`.cert-card` lost its `overflow: hidden`** to make room for this —
   the badge image is inset from the card's edges by its own 1rem padding
   and the PNGs are transparent right up to that inset, so the clip was
   never visually doing anything; keeping it would have clipped the
   flyout/icon on narrow (2-col mobile) cards. To add a cert with no
-  Credly badge (e.g. the degree): skip `.cert-verify-control` entirely
-  and use a bare `<img class="cert-image">`, same as before. The print
-  stylesheet hides both `.cert-verify-flyout` and `.cert-badge-icon`
+  Credly badge (e.g. the degree): skip the `<a>`/`.cert-badge-icon`/
+  `.cert-verify-flyout` entirely and use a bare `<img class="cert-image">`
+  plus `<h3>` as direct children of `.cert-card`, same as before. The
+  print stylesheet hides both `.cert-verify-flyout` and `.cert-badge-icon`
   outright (same as `.mail-flyout`) rather than forcing them into static
   flow — `.cert-badge-trigger` is a real `main a[href^="http"]` now, so
   the existing generic print rule already appends its Credly URL after
@@ -694,8 +712,9 @@ treatment.
 
 The **UMGC degree card is removed for now** — the owner doesn't have that
 credential's file ready yet. Re-add it the same way: a `cert-card` with a
-bare `<img class="cert-image">` (no `.cert-verify-control` wrapper/flyout,
-since degrees don't have Credly badges) and an `<h3>`.
+bare `<img class="cert-image">` (no `<a>`/`.cert-badge-icon`/
+`.cert-verify-flyout`, since degrees don't have Credly badges) and an
+`<h3>`.
 
 The "Verify with Credly" links are **real** — extracted from the hyperlink
 annotations in `assets/Cesar Vaca Resume.pdf` (the visible cert names in that
