@@ -30,8 +30,8 @@ without asking:
 
 ## Operational security
 
-The owner holds a TS/SCI clearance and works in offensive security. Public site
-content must stay sanitized:
+The owner works in offensive security. Public site content must stay
+sanitized:
 
 - Home-lab and coursework framing only. No employer specifics, client names,
   real hostnames, internal IPs, or engagement details.
@@ -724,20 +724,11 @@ project-type label was redundant/unwanted. This is purely about what's
 security framing below (no employer/client attribution in the prose); see
 that section for what's still sanitized.
 
-**"TS/SCI Security Clearance" no longer appears anywhere on the page** —
-removed from the hero (was a `<p class="clearance">` under the tagline,
-now-unused CSS rule deleted too) and from `og:description`, per the owner's
-call to drop it, not just visually hide it. The `<title>` and
-`meta name="description"` never mentioned it and are unchanged. This is
-purely a content/marketing decision, unrelated to the Operational security
-section above (which is about sanitizing project *detail*, not about
-whether the clearance is mentioned at all).
-
 The OG image is a "Cesar Vaca / PORTFOLIO" wordmark — same layout the owner
 originally supplied as a PNG (name in large bold serif, "PORTFOLIO" in
 letter-spaced small caps flanked by two horizontal rules) — not the
-dark-background name+title+clearance design originally sketched in the
-roadmap below — that plan is superseded, this is the real design now. It's
+dark-background name+title design originally sketched in the roadmap
+below — that plan is superseded, this is the real design now. It's
 since been **regenerated in-code** (`Pillow`, not the owner's original file)
 to track the site's actual palette and typeface instead of drifting from
 them: background/text are the light-theme tokens (`--bg: #fbf9f7`,
@@ -766,10 +757,8 @@ Certifications convention above), with alpha transparency intact.
 <details>
 <summary>Superseded: JPEG scan + redaction/watermark pipeline (no longer in use)</summary>
 
-The owner had previously sent the actual PDF certificates (sourced from
-`~/Library/CloudStorage/ProtonDrive-cesar@cvmail.me-folder/career/certs/`,
-also mirrored under iCloud `~/Library/Mobile Documents/.../work/certs/`), each
-rasterized with PyMuPDF at 1400px-long-edge, ~85 quality JPEG, then redacted:
+The owner had previously sent the actual PDF certificates, each rasterized
+with PyMuPDF at 1400px-long-edge, ~85 quality JPEG, then redacted:
 every unique ID-like number (CompTIA's "Candidate ID" and "Code:" fields,
 ISC2's "Certification Number", AWS's "Validation Number", the LPI
 verification code in the Linux Essentials cert's visible URL) was painted
@@ -825,7 +814,7 @@ Work these in order. Each step assumes the previous one is done.
 Favicon, apple-touch-icon, and OG image are all in place (see State above for
 what they actually turned out to be vs. the original plan).
 
-### 2. Tier 2 quality-of-life
+### 2. ~~Tier 2 quality-of-life~~ — done
 
 - ~~Copy-email-to-clipboard button~~ — done. `#copy-email` in `index.html`,
   handler in `js/main.js`.
@@ -879,9 +868,8 @@ is quick by comparison.
   e.g. generic IT/soft skills (customer support, public speaking) and
   résumé-only employer-context items were left out as poor fits for a
   pentesting-focused portfolio.
-- ~~About~~ — done, leads with the Air Force → Space Force → private-sector
-  arc per the plan above. Phrasing/tone came from the owner's own draft plus
-  their cover letter and CV, not invented.
+- ~~About~~ — done, leads with the owner's career arc. Phrasing/tone came
+  from the owner's own draft plus their cover letter and CV, not invented.
 - ~~Certifications~~ — done for the 7 certs with real images and Credly
   links (see State above). Still open: add back the UMGC degree card once
   that file's ready, and resolve the missing 2 certifications (9 mentioned,
