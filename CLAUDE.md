@@ -681,6 +681,12 @@ sanitized:
 
 ## Media
 
+**Status (2026-10-02): the project-card demo videos are commented out in
+`index.html`** (search `DEMO VIDEO`) so the site could go live without them.
+The `<figure class="demo">` markup, `.demo*` CSS, and the hover-play IIFE in
+`js/main.js` are all intentionally left in place (the JS no-ops with no
+`.demo-video` elements). To restore a card's video, uncomment its block.
+
 **Demos are silent looping `<video>`, never GIF.** This was an explicit decision:
 GIF costs ~20x the bytes and caps at 256 colors, which bands terminal text and
 syntax highlighting badly. Videos play on hover, pause and reset on exit.
