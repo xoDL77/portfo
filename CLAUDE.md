@@ -811,6 +811,15 @@ Content the owner still needs to supply: the missing 2 certifications, the
 UMGC degree cert image, and real screen-capture demo videos for the 7
 project cards (step 4 below).
 
+**SEO/crawler files (2026-10-03):** `robots.txt` (allow all + sitemap
+pointer), `sitemap.xml` (`/` and `/resume`), and an inline
+`application/ld+json` schema.org `Person` block in `index.html`'s `<head>`.
+The JSON-LD only restates content already visible on the page (skills,
+certs + their Credly URLs, LinkedIn); it deliberately omits the contact email
+(shown only as copy-only text on the page). Update it when skills/certs change.
+Project/cert cards ship un-`hidden` in the HTML and JS collapses them, so
+non-JS crawlers see all of them — don't re-add static `hidden` attributes.
+
 ## Roadmap
 
 Work these in order. Each step assumes the previous one is done.
